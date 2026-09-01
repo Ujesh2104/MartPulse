@@ -68,7 +68,7 @@ const getAllStores = async (req, res) => {
 
 const createStore = async (req, res) => {
   try {
-    const { name, email, address, category = 'Supermarket', ownerId } = req.body;
+    const { name, email, address, category = 'Supermarket', ownerId, ownerName: customOwnerName } = req.body;
 
     const nameCheck = validateName(name);
     if (!nameCheck.isValid) return res.status(400).json({ message: nameCheck.message });
@@ -80,12 +80,25 @@ const createStore = async (req, res) => {
     if (!addrCheck.isValid) return res.status(400).json({ message: addrCheck.message });
 
     let finalOwnerId = ownerId || req.user.id;
-    let ownerName = req.user.name;
+    let finalOwnerName = (customOwnerName && customOwnerName.trim()) || req.user.name;
 
-    if (ownerId && ownerId !== req.user.id) {
+    if (customOwnerName && customOwnerName.trim()) {
+      const matchedOwner = await User.findOne({
+        where: {
+          [Op.or]: [
+            { name: customOwnerName.trim() },
+            { email: customOwnerName.trim().toLowerCase() },
+          ],
+        },
+      });
+      if (matchedOwner) {
+        finalOwnerId = matchedOwner.id;
+        finalOwnerName = matchedOwner.name;
+      }
+    } else if (ownerId && ownerId !== req.user.id) {
       const targetOwner = await User.findByPk(ownerId);
       if (targetOwner) {
-        ownerName = targetOwner.name;
+        finalOwnerName = targetOwner.name;
       }
     }
 
@@ -96,7 +109,7 @@ const createStore = async (req, res) => {
       address: address.trim(),
       category: category.trim(),
       ownerId: finalOwnerId,
-      ownerName: ownerName,
+      ownerName: finalOwnerName,
       rating: 0,
       ratingCount: 0,
     });
