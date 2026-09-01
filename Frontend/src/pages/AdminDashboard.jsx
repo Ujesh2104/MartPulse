@@ -21,11 +21,12 @@ import {
 } from 'lucide-react';
 import AddStoreModal from '../components/Modals/AddStoreModal';
 import AddUserModal from '../components/Modals/AddUserModal';
+import AnimatedSection from '../components/AnimatedSection';
 
 export const AdminDashboard = () => {
   const { user } = useAuth();
 
-  const [activeTab, setActiveTab] = useState('stores'); // 'stores' | 'users'
+  const [activeTab, setActiveTab] = useState('stores');
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalStores: 0,
@@ -43,7 +44,7 @@ export const AdminDashboard = () => {
   // Stores Filtering & Sorting
   const [storeSearch, setStoreSearch] = useState('');
   const [storeSortField, setStoreSortField] = useState('name');
-  const [storeSortOrder, setStoreSortOrder] = useState('asc'); // 'asc' | 'desc'
+  const [storeSortOrder, setStoreSortOrder] = useState('asc');
 
   // Users Filtering & Sorting
   const [userSearch, setUserSearch] = useState('');
@@ -148,82 +149,90 @@ export const AdminDashboard = () => {
   const storeOwnersList = usersList.filter((u) => u.role === 'STORE_OWNER');
 
   return (
-    <div className="min-h-screen bg-[#F4F5FA] py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F4F5FA] py-6 sm:py-8 px-4 sm:px-6 lg:px-8 space-y-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Header Card */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="px-3 py-1 rounded-full bg-[#5B4DFF]/10 text-[#5B4DFF] text-xs font-bold">
-              👑 System Administrator Console
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Platform Master Management
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Welcome, <strong className="text-slate-800">{user?.name}</strong>! Oversee marts, ratings, and registered users.
-            </p>
-          </div>
+        <AnimatedSection animation="fade-up">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="px-3 py-1 rounded-full bg-[#5B4DFF]/10 text-[#5B4DFF] text-xs font-bold">
+                👑 System Administrator Console
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Platform Master Management
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500">
+                Welcome, <strong className="text-slate-800">{user?.name}</strong>! Oversee marts, ratings, and registered users.
+              </p>
+            </div>
 
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <button
-              onClick={() => setShowAddStoreModal(true)}
-              className="px-4 py-2.5 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white text-xs font-bold shadow-[0_4px_12px_rgba(91,77,255,0.25)] flex items-center gap-1.5 transition-all"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add New Store</span>
-            </button>
-            <button
-              onClick={() => setShowAddUserModal(true)}
-              className="px-4 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add New User</span>
-            </button>
-            <button
-              onClick={fetchDashboardData}
-              className="p-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
-              title="Refresh Data"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <button
+                onClick={() => setShowAddStoreModal(true)}
+                className="px-4 py-2.5 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white text-xs font-bold shadow-[0_4px_12px_rgba(91,77,255,0.25)] flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add New Store</span>
+              </button>
+              <button
+                onClick={() => setShowAddUserModal(true)}
+                className="px-4 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add New User</span>
+              </button>
+              <button
+                onClick={fetchDashboardData}
+                className="p-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors hover:scale-105"
+                title="Refresh Data"
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
           </div>
-        </div>
+        </AnimatedSection>
 
-        {/* 3 Metrics Cards (Matching Reference Card Style) */}
+        {/* 3 Metrics Cards with Stagger Animation */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#5B4DFF]/10 text-[#5B4DFF] flex items-center justify-center font-bold">
-              <Users className="w-6 h-6" />
+          <AnimatedSection animation="fade-up" delay={100}>
+            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-2xl bg-[#5B4DFF]/10 text-[#5B4DFF] flex items-center justify-center font-bold">
+                <Users className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Users</p>
+                <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalUsers}</h3>
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Users</p>
-              <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalUsers}</h3>
-            </div>
-          </div>
+          </AnimatedSection>
 
-          <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
-              <Building2 className="w-6 h-6" />
+          <AnimatedSection animation="fade-up" delay={200}>
+            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Registered Stores</p>
+                <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalStores}</h3>
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Registered Stores</p>
-              <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalStores}</h3>
-            </div>
-          </div>
+          </AnimatedSection>
 
-          <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold">
-              <Star className="w-6 h-6 fill-amber-500" />
+          <AnimatedSection animation="fade-up" delay={300}>
+            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold">
+                <Star className="w-6 h-6 fill-amber-500" />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Ratings</p>
+                <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalRatings}</h3>
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Ratings</p>
-              <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalRatings}</h3>
-            </div>
-          </div>
+          </AnimatedSection>
         </div>
 
-        {/* Section Pill Tabs: Stores vs Users */}
-        <div className="flex items-center gap-2">
+        {/* Section Pill Tabs */}
+        <AnimatedSection animation="fade-up" delay={150} className="flex items-center gap-2">
           <button
             onClick={() => setActiveTab('stores')}
             className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${
@@ -246,11 +255,11 @@ export const AdminDashboard = () => {
             <Users className="w-3.5 h-3.5" />
             <span>User Management ({usersList.length})</span>
           </button>
-        </div>
+        </AnimatedSection>
 
         {/* Tab 1: Stores Catalog */}
         {activeTab === 'stores' && (
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <AnimatedSection animation="fade-up" delay={200} className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
             {/* Table Filter Bar */}
             <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="relative w-full sm:w-80">
@@ -340,12 +349,12 @@ export const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
-          </div>
+          </AnimatedSection>
         )}
 
         {/* Tab 2: User Management */}
         {activeTab === 'users' && (
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <AnimatedSection animation="fade-up" delay={200} className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
             {/* User Filter Controls */}
             <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -475,7 +484,7 @@ export const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
-          </div>
+          </AnimatedSection>
         )}
       </div>
 

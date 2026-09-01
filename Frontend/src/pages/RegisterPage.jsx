@@ -19,6 +19,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import MartPulseLogo from '../components/MartPulseLogo';
+import AnimatedSection from '../components/AnimatedSection';
 
 export const RegisterPage = () => {
   const { register, loading, authError } = useAuth();
@@ -91,9 +92,13 @@ export const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[#F4F5FA] flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-2">
-        <div className="flex justify-center mb-2">
+    <div className="min-h-[calc(100vh-80px)] bg-[#F4F5FA] flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background ambient animations */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#5B4DFF]/10 rounded-full blur-[100px] pointer-events-none animate-pulse-subtle"></div>
+      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none animate-float"></div>
+
+      <AnimatedSection animation="fade-down" className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-2 relative z-10">
+        <div className="flex justify-center mb-2 animate-float">
           <MartPulseLogo size="lg" />
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -102,12 +107,12 @@ export const RegisterPage = () => {
         <p className="text-xs text-slate-500">
           Join MartPulse to rate grocery marts and discover top-rated stores
         </p>
-      </div>
+      </AnimatedSection>
 
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg">
-        <div className="bg-white py-8 px-6 sm:px-10 rounded-3xl border border-slate-200/80 shadow-xs space-y-5">
+      <AnimatedSection animation="scale" delay={150} className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg relative z-10">
+        <div className="bg-white py-8 px-6 sm:px-10 rounded-3xl border border-slate-200/80 shadow-lg space-y-5 hover:shadow-xl transition-shadow">
           {(globalError || authError) && (
-            <div className="p-3.5 rounded-2xl bg-rose-50 text-rose-800 border border-rose-200 text-xs flex items-center gap-2">
+            <div className="p-3.5 rounded-2xl bg-rose-50 text-rose-800 border border-rose-200 text-xs flex items-center gap-2 animate-fade-in">
               <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
               <span>{globalError || authError}</span>
             </div>
@@ -246,7 +251,7 @@ export const RegisterPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white font-bold text-xs shadow-[0_4px_12px_rgba(91,77,255,0.25)] hover:shadow-[0_6px_16px_rgba(91,77,255,0.35)] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+              className="w-full py-3 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white font-bold text-xs shadow-[0_4px_12px_rgba(91,77,255,0.25)] hover:shadow-[0_6px_16px_rgba(91,77,255,0.35)] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50 hover:-translate-y-0.5 active:translate-y-0"
             >
               {loading ? <span>Creating Account...</span> : <span>Register Now</span>}
             </button>
@@ -259,7 +264,7 @@ export const RegisterPage = () => {
             </Link>
           </div>
         </div>
-      </div>
+      </AnimatedSection>
     </div>
   );
 };
