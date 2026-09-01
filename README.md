@@ -151,4 +151,4 @@ node test_integration.js
 ---
 
 ## 📄 License
-Developed for the Full-Stack Developer Assessment. MIT License.
+Distributed under the MIT License.
