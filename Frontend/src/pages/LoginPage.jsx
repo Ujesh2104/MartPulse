@@ -26,11 +26,6 @@ export const LoginPage = () => {
   const [formError, setFormError] = useState('');
 
   const redirectByRole = (role) => {
-    const from = location.state?.from?.pathname;
-    if (from && from !== '/login') {
-      navigate(from, { replace: true });
-      return;
-    }
     if (role === 'ADMIN') {
       navigate('/admin/dashboard', { replace: true });
     } else if (role === 'STORE_OWNER') {
