@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
-  // Sync state changes with localStorage
   useEffect(() => {
     if (token) {
       localStorage.setItem('martpulse_token', token);
@@ -39,9 +38,16 @@ export const AuthProvider = ({ children }) => {
         setUser(response.user);
         return { success: true, user: response.user };
       }
-      throw new Error(response.message || 'Login failed');
+      throw new Error(response?.message || 'Login failed');
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Invalid email or password';
+      let msg = 'Invalid email or password. Please check your credentials.';
+      if (err.response?.status === 400 || err.response?.status === 401) {
+        msg = err.response?.data?.message || 'Invalid email or password.';
+      } else if (err.response?.status === 404 || err.code === 'ERR_NETWORK' || !err.response) {
+        msg = 'Unable to reach backend server. Please verify backend connection.';
+      } else if (err.response?.data?.message && !err.response.data.message.includes('Route')) {
+        msg = err.response.data.message;
+      }
       setAuthError(msg);
       return { success: false, error: msg };
     } finally {
@@ -59,9 +65,16 @@ export const AuthProvider = ({ children }) => {
         setUser(response.user);
         return { success: true, user: response.user };
       }
-      throw new Error(response.message || 'Registration failed');
+      throw new Error(response?.message || 'Registration failed');
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Registration failed. Please try again.';
+      let msg = 'Registration failed. Please check the entered details.';
+      if (err.response?.status === 400 || err.response?.status === 409) {
+        msg = err.response?.data?.message || 'A user with this email already exists.';
+      } else if (err.response?.status === 404 || err.code === 'ERR_NETWORK' || !err.response) {
+        msg = 'Unable to reach backend server. Please verify backend connection.';
+      } else if (err.response?.data?.message && !err.response.data.message.includes('Route')) {
+        msg = err.response.data.message;
+      }
       setAuthError(msg);
       return { success: false, error: msg };
     } finally {
@@ -69,41 +82,44 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const changePassword = async (currentPassword, newPassword) => {
+    try {
+      const response = await authAPI.changePassword({ currentPassword, newPassword });
+      return { success: true, message: response.message };
+    } catch (err) {
+      let msg = 'Failed to update password. Please verify your current password.';
+      if (err.response?.data?.message && !err.response.data.message.includes('Route')) {
+        msg = err.response.data.message;
+      }
+      return { success: false, error: msg };
+    }
+  };
+
   const logout = () => {
-    setUser(null);
     setToken(null);
+    setUser(null);
+    setAuthError(null);
     localStorage.removeItem('martpulse_token');
     localStorage.removeItem('martpulse_user');
   };
 
-  const changePassword = async (currentPassword, newPassword) => {
-    setLoading(true);
-    try {
-      const res = await authAPI.changePassword({ currentPassword, newPassword });
-      return { success: true, message: res.message || 'Password updated successfully' };
-    } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Failed to update password';
-      return { success: false, error: msg };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const value = {
-    user,
-    token,
-    isAuthenticated: !!token && !!user,
-    role: user?.role,
-    loading,
-    authError,
-    setAuthError,
-    login,
-    register,
-    logout,
-    changePassword,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        authError,
+        login,
+        register,
+        changePassword,
+        logout,
+        isAuthenticated: !!token && !!user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
@@ -113,3 +129,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export default AuthContext;
