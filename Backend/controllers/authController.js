@@ -78,13 +78,16 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const adminCount = await User.count({ where: { role: 'ADMIN' } });
+    const assignedRole = adminCount === 0 ? 'ADMIN' : 'NORMAL_USER';
+
     const newUser = await User.create({
       id: 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
       name: name.trim(),
       email: email.trim().toLowerCase(),
       password: hashedPassword,
       address: address.trim(),
-      role: 'NORMAL_USER',
+      role: assignedRole,
     });
 
     const token = jwt.sign(
