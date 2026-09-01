@@ -9,90 +9,51 @@ export const MartPulseLogo = ({ size = 'md', className = '', showSubtitle = fals
 
   return (
     <div className={`inline-flex items-center gap-3 select-none ${className}`}>
-      {/* Precision Glowing 3D Vector Emblem with Neon Pulse Aura */}
+      {/* Clean Glowing Shopping Mart Emblem (Without Middle Zigzag Lines) */}
       <div className="relative group flex items-center justify-center">
-        {/* Live Ambient Neon Pulse Glow Behind Icon */}
-        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#5B4DFF] via-[#7C3AED] to-[#4F46E5] opacity-75 blur-md group-hover:opacity-100 transition duration-500 group-hover:blur-lg animate-pulse-subtle"></div>
+        {/* Soft Ambient Neon Aura */}
+        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#5B4DFF] via-[#818CF8] to-[#6366F1] opacity-75 blur-md group-hover:opacity-100 transition duration-300"></div>
 
-        {/* Glossy Cyber Emblem Tile */}
+        {/* Clean Purple Gradient Tile */}
         <div
-          className={`relative ${iconContainerSize} rounded-2xl bg-gradient-to-br from-[#1E1B4B] via-[#0F172A] to-[#1E1B4B] p-0.5 shadow-[0_4px_20px_rgba(91,77,255,0.45)] border border-[#7C3AED]/50 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:scale-105`}
+          className={`relative ${iconContainerSize} rounded-2xl bg-[#5B4DFF] p-1.5 shadow-[0_4px_16px_rgba(91,77,255,0.4)] border border-white/20 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:scale-105`}
         >
-          {/* Internal Glassmorphic Highlight */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent pointer-events-none"></div>
-
-          {/* Razor-Sharp Glowing Vector SVG */}
+          {/* Razor-Sharp Pure Glowing Shopping Cart Vector */}
           <svg
-            viewBox="0 0 36 36"
+            viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-4/5 h-4/5"
-            style={{
-              filter: 'drop-shadow(0 0 6px rgba(91,77,255,0.9)) drop-shadow(0 0 12px rgba(124,58,237,0.7))',
-            }}
+            className="w-full h-full text-white"
           >
-            <defs>
-              {/* Neon Indigo-Violet Gradient */}
-              <linearGradient id="neonPulseGrad" x1="2" y1="2" x2="34" y2="34" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#818CF8" />
-                <stop offset="0.5" stopColor="#6366F1" />
-                <stop offset="1" stopColor="#C084FC" />
-              </linearGradient>
-
-              {/* Gold Accent Gradient */}
-              <linearGradient id="goldNodeGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop stopColor="#FDE047" />
-                <stop offset="1" stopColor="#F59E0B" />
-              </linearGradient>
-
-              {/* Glowing Drop Filter */}
-              <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="1.5" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
-            </defs>
-
-            {/* Shopping Mart Geometric Structure */}
+            {/* Elegant Minimalist Shopping Cart */}
             <path
-              d="M5 8H8.5L11.5 22H26.5L29 12H10.5"
-              stroke="url(#neonPulseGrad)"
+              d="M3 4H5.5L7.5 15H18.5L20.5 7H6.5"
+              stroke="#FFFFFF"
               strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              filter="url(#neonGlow)"
             />
 
-            {/* Vibrant EKG Neon Pulse Waveform Rising through Cart */}
+            {/* Glowing Golden Quality Star Accent Inside Cart */}
             <path
-              d="M4 17H11L14.5 9L18.5 25L22.5 13L25 17H31"
-              stroke="#FFFFFF"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              d="M13.5 8.5L14.5 10.5L16.5 10.8L15 12.3L15.4 14.5L13.5 13.5L11.6 14.5L12 12.3L10.5 10.8L12.5 10.5L13.5 8.5Z"
+              fill="#FDE047"
             />
-
-            {/* Gold Apex Spark Node */}
-            <circle cx="14.5" cy="9" r="2.2" fill="url(#goldNodeGrad)" filter="url(#neonGlow)" />
 
             {/* Cart Wheels */}
-            <circle cx="14" cy="27" r="2" fill="url(#neonPulseGrad)" />
-            <circle cx="24" cy="27" r="2" fill="url(#neonPulseGrad)" />
+            <circle cx="9" cy="18.5" r="1.5" fill="#FFFFFF" />
+            <circle cx="17" cy="18.5" r="1.5" fill="#FFFFFF" />
           </svg>
         </div>
       </div>
 
-      {/* Brand Typography with Live Glowing Dot */}
+      {/* Brand Typography with Clean Indigo Accent */}
       <div className="flex flex-col">
         <div className="flex items-center leading-none">
           <span className={`font-heading font-black tracking-tight text-slate-900 ${textTitleSize}`}>
             MART
           </span>
-          <span
-            className={`font-heading font-black tracking-tight text-[#5B4DFF] ml-0.5 ${textTitleSize}`}
-            style={{
-              textShadow: '0 0 20px rgba(91,77,255,0.4)',
-            }}
-          >
+          <span className={`font-heading font-black tracking-tight text-[#5B4DFF] ml-0.5 ${textTitleSize}`}>
             PULSE
           </span>
           <span className="ml-1.5 w-2 h-2 rounded-full bg-[#5B4DFF] shadow-[0_0_8px_#5B4DFF] animate-pulse-subtle"></span>
