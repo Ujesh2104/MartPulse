@@ -9,40 +9,20 @@ export const MartPulseLogo = ({ size = 'md', className = '', showSubtitle = fals
 
   return (
     <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
-      {/* Custom Ultra-Modern M-Pulse Geometric Glyph */}
-      <div className={`relative ${iconDimension} flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#6366F1] via-[#5B4DFF] to-[#4338CA] p-0.5 shadow-[0_4px_16px_rgba(91,77,255,0.38)] transition-transform duration-300 hover:scale-105 group`}>
-        {/* Inner subtle bevel border */}
-        <div className="w-full h-full rounded-[14px] bg-[#5B4DFF] flex items-center justify-center overflow-hidden relative">
-          {/* Subtle background ambient light */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent pointer-events-none"></div>
-
-          {/* Precision SVG Brand Mark */}
-          <svg
-            viewBox="0 0 32 32"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-5/6 h-5/6 text-white drop-shadow-sm"
-          >
-            {/* Background interconnected grid nodes */}
-            <circle cx="6" cy="18" r="1.5" fill="rgba(255,255,255,0.5)" />
-            <circle cx="26" cy="18" r="1.5" fill="rgba(255,255,255,0.5)" />
-
-            {/* Glowing Pulse Waveform Path */}
-            <path
-              d="M5 18H10L13 10L17 24L20 14L22 18H27"
-              stroke="white"
-              strokeWidth="2.75"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-
-            {/* Pulse Apex Star Glow */}
-            <circle cx="13" cy="10" r="1.8" fill="#FCD34D" />
-          </svg>
-        </div>
+      {/* 3D Glowing MartPulse Brand Emblem */}
+      <div className={`relative ${iconDimension} rounded-2xl overflow-hidden shadow-[0_4px_14px_rgba(91,77,255,0.35)] border border-indigo-100 flex-shrink-0 transition-transform duration-300 hover:scale-105 group bg-white`}>
+        <img
+          src="/logo.png"
+          alt="MartPulse 3D Logo"
+          className="w-full h-full object-cover rounded-2xl group-hover:scale-110 transition-transform duration-300"
+          onError={(e) => {
+            // High-precision SVG Fallback if image path fails
+            e.target.style.display = 'none';
+          }}
+        />
       </div>
 
-      {/* Modern High-End Typography */}
+      {/* Modern High-End Brand Typography */}
       <div className="flex flex-col">
         <div className="flex items-center leading-none">
           <span className={`font-heading font-black tracking-tight text-slate-900 ${textTitleSize}`}>
