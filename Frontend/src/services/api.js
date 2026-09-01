@@ -1,15 +1,21 @@
 import axios from 'axios';
 
-// Base Axios instance pointing directly to Express.js backend
+// Automatically normalize base URL so it always points to the backend /api prefix
+const rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').trim();
+const baseURL = rawBaseUrl.endsWith('/api')
+  ? rawBaseUrl
+  : rawBaseUrl.endsWith('/')
+  ? `${rawBaseUrl}api`
+  : `${rawBaseUrl}/api`;
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
-  timeout: 10000,
+  baseURL,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor: automatically attaches JWT Bearer token to every outgoing request
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('martpulse_token');
@@ -21,7 +27,6 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: handles global response errors (like token expiration)
 API.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -33,9 +38,7 @@ API.interceptors.response.use(
   }
 );
 
-// ==========================================
 // 1. AUTH API
-// ==========================================
 export const authAPI = {
   login: async (credentials) => {
     const response = await API.post('/auth/login', credentials);
@@ -58,9 +61,7 @@ export const authAPI = {
   },
 };
 
-// ==========================================
 // 2. STORE API
-// ==========================================
 export const storeAPI = {
   getAllStores: async (params = {}) => {
     const response = await API.get('/stores', { params });
@@ -73,9 +74,7 @@ export const storeAPI = {
   },
 };
 
-// ==========================================
 // 3. RATING API
-// ==========================================
 export const ratingAPI = {
   submitRating: async (ratingData) => {
     const response = await API.post('/ratings', ratingData);
@@ -93,9 +92,7 @@ export const ratingAPI = {
   },
 };
 
-// ==========================================
 // 4. ADMIN API
-// ==========================================
 export const adminAPI = {
   getStats: async () => {
     const response = await API.get('/admin/stats');
@@ -117,9 +114,7 @@ export const adminAPI = {
   },
 };
 
-// ==========================================
 // 5. OWNER API
-// ==========================================
 export const ownerAPI = {
   getOwnerDashboard: async () => {
     const response = await API.get('/owner/dashboard');
