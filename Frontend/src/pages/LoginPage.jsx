@@ -56,15 +56,14 @@ export const LoginPage = () => {
     }
   };
 
-  // Demo accounts helper
-  const handleQuickLogin = async (demoEmail, demoPassword) => {
+  const [selectedRole, setSelectedRole] = useState(null);
+
+  // Fill demo accounts credentials
+  const handleQuickFill = (demoEmail, demoPassword, roleName) => {
     setEmail(demoEmail);
     setPassword(demoPassword);
+    setSelectedRole(roleName);
     setFormError('');
-    const res = await login(demoEmail, demoPassword);
-    if (res.success && res.user) {
-      redirectByRole(res.user.role);
-    }
   };
 
   return (
@@ -158,17 +157,21 @@ export const LoginPage = () => {
             </button>
           </form>
 
-          {/* Quick Demo Logins for Instant Role Testing */}
+          {/* Quick Demo Credentials Autofill */}
           <div className="pt-4 border-t border-zinc-100">
             <p className="text-center text-xs uppercase tracking-wider font-bold text-zinc-400 mb-3">
-              ⚡ Quick Demo One-Click Sign In
+              ⚡ Quick Autofill Demo Credentials
             </p>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => handleQuickLogin('admin@martpulse.com', 'Admin@12345')}
-                className="p-2 rounded-xl bg-zinc-900 text-amber-400 border border-zinc-800 text-[11px] font-bold hover:bg-zinc-800 transition-all flex flex-col items-center gap-1"
-                title="Login as Administrator"
+                onClick={() => handleQuickFill('admin@martpulse.com', 'Admin@12345', 'ADMIN')}
+                className={`p-2.5 rounded-xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border ${
+                  selectedRole === 'ADMIN'
+                    ? 'bg-amber-500/10 text-amber-500 border-amber-500 shadow-sm'
+                    : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800 hover:text-white'
+                }`}
+                title="Autofill Administrator Credentials"
               >
                 <ShieldCheck className="w-4 h-4 text-amber-500" />
                 <span>Admin</span>
@@ -176,9 +179,13 @@ export const LoginPage = () => {
 
               <button
                 type="button"
-                onClick={() => handleQuickLogin('owner@martpulse.com', 'Owner@12345')}
-                className="p-2 rounded-xl bg-zinc-900 text-amber-400 border border-zinc-800 text-[11px] font-bold hover:bg-zinc-800 transition-all flex flex-col items-center gap-1"
-                title="Login as Store Owner"
+                onClick={() => handleQuickFill('owner@martpulse.com', 'Owner@12345', 'STORE_OWNER')}
+                className={`p-2.5 rounded-xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border ${
+                  selectedRole === 'STORE_OWNER'
+                    ? 'bg-amber-500/10 text-amber-500 border-amber-500 shadow-sm'
+                    : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800 hover:text-white'
+                }`}
+                title="Autofill Store Owner Credentials"
               >
                 <UserCheck className="w-4 h-4 text-amber-500" />
                 <span>Store Owner</span>
@@ -186,9 +193,13 @@ export const LoginPage = () => {
 
               <button
                 type="button"
-                onClick={() => handleQuickLogin('user@martpulse.com', 'User@12345')}
-                className="p-2 rounded-xl bg-zinc-900 text-amber-400 border border-zinc-800 text-[11px] font-bold hover:bg-zinc-800 transition-all flex flex-col items-center gap-1"
-                title="Login as Normal User"
+                onClick={() => handleQuickFill('user@martpulse.com', 'User@12345', 'NORMAL_USER')}
+                className={`p-2.5 rounded-xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border ${
+                  selectedRole === 'NORMAL_USER'
+                    ? 'bg-amber-500/10 text-amber-500 border-amber-500 shadow-sm'
+                    : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800 hover:text-white'
+                }`}
+                title="Autofill Normal User Credentials"
               >
                 <Sparkles className="w-4 h-4 text-amber-500" />
                 <span>Normal User</span>
