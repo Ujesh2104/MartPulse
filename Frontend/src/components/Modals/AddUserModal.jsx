@@ -167,7 +167,7 @@ export const AddUserModal = ({ isOpen, onClose, onUserCreated }) => {
               type="text"
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              placeholder="e.g. Alexander Sterling Vance"
+              placeholder="e.g. Rajesh Sharma (Store Owner)"
               className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 ${
                 errors.name
                   ? 'border-rose-400 bg-rose-50/30 focus:ring-rose-500/20'
