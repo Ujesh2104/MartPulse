@@ -108,11 +108,6 @@ export const LandingPage = () => {
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-3/4 h-80 bg-gradient-to-b from-[#5B4DFF]/8 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="max-w-5xl mx-auto text-center space-y-6 relative z-10 animate-fade-in-up">
-          {/* Top Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-xs text-xs font-bold text-[#5B4DFF]">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Next-Gen Grocery & Retail Rating Platform</span>
-          </div>
 
           {/* Heading */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
