@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { adminAPI, storeAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { StarRating } from '../components/StarRating';
-import AddStoreModal from '../components/Modals/AddStoreModal';
-import AddUserModal from '../components/Modals/AddUserModal';
 import {
   Users,
   Store,
@@ -11,47 +8,52 @@ import {
   Plus,
   Search,
   ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Shield,
+  Filter,
+  RefreshCw,
   Building2,
   Mail,
   MapPin,
-  Calendar,
-  Sparkles,
+  ShieldCheck,
+  UserCheck,
   CheckCircle2,
-  RefreshCw,
+  TrendingUp,
+  Layers,
 } from 'lucide-react';
+import AddStoreModal from '../components/Modals/AddStoreModal';
+import AddUserModal from '../components/Modals/AddUserModal';
 
 export const AdminDashboard = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState({ totalUsers: 0, totalStores: 0, totalRatings: 0 });
+
   const [activeTab, setActiveTab] = useState('stores'); // 'stores' | 'users'
-  
-  // Stores Table State
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalStores: 0,
+    totalRatings: 0,
+  });
+
   const [stores, setStores] = useState([]);
+  const [usersList, setUsersList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Modals
+  const [showAddStoreModal, setShowAddStoreModal] = useState(false);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+
+  // Stores Filtering & Sorting
   const [storeSearch, setStoreSearch] = useState('');
   const [storeSortField, setStoreSortField] = useState('name');
   const [storeSortOrder, setStoreSortOrder] = useState('asc'); // 'asc' | 'desc'
-  
-  // Users Table State
-  const [usersList, setUsersList] = useState([]);
+
+  // Users Filtering & Sorting
   const [userSearch, setUserSearch] = useState('');
   const [userRoleFilter, setUserRoleFilter] = useState('');
   const [userSortField, setUserSortField] = useState('name');
   const [userSortOrder, setUserSortOrder] = useState('asc');
 
-  const [loading, setLoading] = useState(true);
-  const [showAddStoreModal, setShowAddStoreModal] = useState(false);
-  const [showAddUserModal, setShowAddUserModal] = useState(false);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
   const fetchDashboardData = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       const [statsRes, storesRes, usersRes] = await Promise.all([
         adminAPI.getStats(),
         storeAPI.getAllStores(),
@@ -68,7 +70,10 @@ export const AdminDashboard = () => {
     }
   };
 
-  // Store Sorting handler
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
   const handleStoreSort = (field) => {
     if (storeSortField === field) {
       setStoreSortOrder(storeSortOrder === 'asc' ? 'desc' : 'asc');
@@ -78,7 +83,6 @@ export const AdminDashboard = () => {
     }
   };
 
-  // User Sorting handler
   const handleUserSort = (field) => {
     if (userSortField === field) {
       setUserSortOrder(userSortOrder === 'asc' ? 'desc' : 'asc');
@@ -88,7 +92,6 @@ export const AdminDashboard = () => {
     }
   };
 
-  // Filtered and Sorted Stores
   const processedStores = stores
     .filter((s) => {
       const q = storeSearch.toLowerCase();
@@ -99,99 +102,86 @@ export const AdminDashboard = () => {
       );
     })
     .sort((a, b) => {
-      let valA = a[storeSortField] || '';
-      let valB = b[storeSortField] || '';
-      if (typeof valA === 'string') valA = valA.toLowerCase();
-      if (typeof valB === 'string') valB = valB.toLowerCase();
+      let valA = a[storeSortField];
+      let valB = b[storeSortField];
+
+      if (storeSortField === 'rating') {
+        valA = parseFloat(valA || 0);
+        valB = parseFloat(valB || 0);
+      } else {
+        valA = (valA || '').toString().toLowerCase();
+        valB = (valB || '').toString().toLowerCase();
+      }
 
       if (valA < valB) return storeSortOrder === 'asc' ? -1 : 1;
       if (valA > valB) return storeSortOrder === 'asc' ? 1 : -1;
       return 0;
     });
 
-  // Filtered and Sorted Users
   const processedUsers = usersList
     .filter((u) => {
       const q = userSearch.toLowerCase();
       const matchesSearch =
         u.name.toLowerCase().includes(q) ||
         u.email.toLowerCase().includes(q) ||
-        u.address.toLowerCase().includes(q);
+        (u.address && u.address.toLowerCase().includes(q));
       const matchesRole = !userRoleFilter || u.role === userRoleFilter;
       return matchesSearch && matchesRole;
     })
     .sort((a, b) => {
-      let valA = a[userSortField] || '';
-      let valB = b[userSortField] || '';
-      if (typeof valA === 'string') valA = valA.toLowerCase();
-      if (typeof valB === 'string') valB = valB.toLowerCase();
+      let valA = a[userSortField];
+      let valB = b[userSortField];
+
+      if (userSortField === 'storeRating') {
+        valA = parseFloat(valA || 0);
+        valB = parseFloat(valB || 0);
+      } else {
+        valA = (valA || '').toString().toLowerCase();
+        valB = (valB || '').toString().toLowerCase();
+      }
 
       if (valA < valB) return userSortOrder === 'asc' ? -1 : 1;
       if (valA > valB) return userSortOrder === 'asc' ? 1 : -1;
       return 0;
     });
 
-  const getRoleBadge = (role) => {
-    switch (role) {
-      case 'ADMIN':
-        return (
-          <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">
-            ADMIN
-          </span>
-        );
-      case 'STORE_OWNER':
-        return (
-          <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-            STORE OWNER
-          </span>
-        );
-      default:
-        return (
-          <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-zinc-100 text-zinc-700 border border-zinc-200">
-            NORMAL USER
-          </span>
-        );
-    }
-  };
-
   const storeOwnersList = usersList.filter((u) => u.role === 'STORE_OWNER');
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[#FAFAFA] py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header Ribbon */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#09090B] text-white p-6 sm:p-8 rounded-3xl border border-zinc-800 shadow-xl relative overflow-hidden">
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-semibold uppercase tracking-widest text-amber-400 mb-2">
-              <Shield className="w-3.5 h-3.5" />
-              <span>System Administrator Console</span>
-            </div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              Platform Master Dashboard
+    <div className="min-h-screen bg-[#F4F5FA] py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Top Header Card */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <span className="px-3 py-1 rounded-full bg-[#5B4DFF]/10 text-[#5B4DFF] text-xs font-bold">
+              👑 System Administrator Console
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Platform Master Management
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-              Welcome back, {user?.name}. Oversee catalog items, users, and audit ratings.
+            <p className="text-xs sm:text-sm text-slate-500">
+              Welcome, <strong className="text-slate-800">{user?.name}</strong>! Oversee marts, ratings, and registered users.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 relative z-10">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <button
               onClick={() => setShowAddStoreModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gold-gradient text-zinc-950 font-bold text-xs shadow-gold-glow hover:shadow-gold-glow-lg transition-all"
+              className="px-4 py-2.5 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white text-xs font-bold shadow-[0_4px_12px_rgba(91,77,255,0.25)] flex items-center gap-1.5 transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>Add New Store</span>
             </button>
             <button
               onClick={() => setShowAddUserModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs border border-zinc-700 transition-all"
+              className="px-4 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all"
             >
-              <Plus className="w-4 h-4 text-amber-500" />
+              <Plus className="w-4 h-4" />
               <span>Add New User</span>
             </button>
             <button
               onClick={fetchDashboardData}
-              className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
+              className="p-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
               title="Refresh Data"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -199,236 +189,149 @@ export const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* 1. 3 STAT CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in-up">
-          {/* Total Users */}
-          <div className="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm flex items-center justify-between hover-lift">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                Total Registered Users
-              </p>
-              <h3 className="font-serif text-3xl font-bold text-zinc-900 mt-1">
-                {stats.totalUsers || usersList.length}
-              </h3>
-              <p className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Across 3 role levels</span>
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 hover:scale-110 transition-transform">
+        {/* 3 Metrics Cards (Matching Reference Card Style) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#5B4DFF]/10 text-[#5B4DFF] flex items-center justify-center font-bold">
               <Users className="w-6 h-6" />
             </div>
-          </div>
-
-          {/* Total Stores */}
-          <div className="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm flex items-center justify-between hover-lift">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                Verified Stores / Marts
-              </p>
-              <h3 className="font-serif text-3xl font-bold text-zinc-900 mt-1">
-                {stats.totalStores || stores.length}
-              </h3>
-              <p className="text-xs text-amber-600 font-medium mt-1 flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Active verified catalog</span>
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center text-amber-400 hover:scale-110 transition-transform">
-              <Store className="w-6 h-6" />
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Users</p>
+              <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalUsers}</h3>
             </div>
           </div>
 
-          {/* Total Ratings */}
-          <div className="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm flex items-center justify-between hover-lift">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                Total Submitted Ratings
-              </p>
-              <h3 className="font-serif text-3xl font-bold text-zinc-900 mt-1">
-                {stats.totalRatings}
-              </h3>
-              <p className="text-xs text-zinc-500 font-medium mt-1">
-                From authenticated shoppers
-              </p>
+          <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
+              <Building2 className="w-6 h-6" />
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-500 hover:scale-110 transition-transform">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Registered Stores</p>
+              <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalStores}</h3>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold">
               <Star className="w-6 h-6 fill-amber-500" />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Ratings</p>
+              <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalRatings}</h3>
             </div>
           </div>
         </div>
 
-        {/* Tab Switcher & Management View */}
-        <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
-          {/* Navigation Bar */}
-          <div className="px-6 pt-5 pb-4 border-b border-zinc-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setActiveTab('stores')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                  activeTab === 'stores'
-                    ? 'bg-zinc-900 text-amber-400 shadow-sm'
-                    : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100'
-                }`}
-              >
-                <Store className="w-4 h-4" />
-                <span>Stores Catalog ({stores.length})</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('users')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                  activeTab === 'users'
-                    ? 'bg-zinc-900 text-amber-400 shadow-sm'
-                    : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100'
-                }`}
-              >
-                <Users className="w-4 h-4" />
-                <span>User Management ({usersList.length})</span>
-              </button>
-            </div>
+        {/* Section Pill Tabs: Stores vs Users */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab('stores')}
+            className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${
+              activeTab === 'stores'
+                ? 'bg-[#5B4DFF] text-white shadow-[0_4px_12px_rgba(91,77,255,0.3)]'
+                : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+            }`}
+          >
+            <Building2 className="w-3.5 h-3.5" />
+            <span>Stores Catalog ({stores.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('users')}
+            className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${
+              activeTab === 'users'
+                ? 'bg-[#5B4DFF] text-white shadow-[0_4px_12px_rgba(91,77,255,0.3)]'
+                : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>User Management ({usersList.length})</span>
+          </button>
+        </div>
 
-            {/* Quick Actions based on active tab */}
-            {activeTab === 'stores' ? (
-              <div className="relative w-full sm:w-72">
-                <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        {/* Tab 1: Stores Catalog */}
+        {activeTab === 'stores' && (
+          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+            {/* Table Filter Bar */}
+            <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="relative w-full sm:w-80">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={storeSearch}
                   onChange={(e) => setStoreSearch(e.target.value)}
-                  placeholder="Search stores by name, address..."
-                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-zinc-200 text-xs focus:outline-none focus:border-amber-500"
+                  placeholder="Filter by store name, address..."
+                  className="w-full pl-9 pr-4 py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-slate-800 text-xs rounded-full border border-slate-200 outline-none transition-all placeholder:text-slate-400"
                 />
               </div>
-            ) : (
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <select
-                  value={userRoleFilter}
-                  onChange={(e) => setUserRoleFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl border border-zinc-200 text-xs bg-white focus:outline-none focus:border-amber-500"
-                >
-                  <option value="">All Roles</option>
-                  <option value="ADMIN">Admin</option>
-                  <option value="STORE_OWNER">Store Owner</option>
-                  <option value="NORMAL_USER">Normal User</option>
-                </select>
-                <div className="relative w-full sm:w-60">
-                  <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={userSearch}
-                    onChange={(e) => setUserSearch(e.target.value)}
-                    placeholder="Search users..."
-                    className="w-full pl-9 pr-4 py-2 rounded-xl border border-zinc-200 text-xs focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
+              <span className="text-xs text-slate-400">
+                Showing <strong className="text-slate-700">{processedStores.length}</strong> of {stores.length} stores
+              </span>
+            </div>
 
-          {/* TAB 1: STORES TABLE */}
-          {activeTab === 'stores' && (
+            {/* Clean Table */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-zinc-700">
-                <thead className="bg-zinc-50 text-[11px] font-bold uppercase tracking-wider text-zinc-500 border-b border-zinc-200">
-                  <tr>
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/70 border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
                     <th
-                      className="px-6 py-4 cursor-pointer hover:text-zinc-900 transition-colors"
                       onClick={() => handleStoreSort('name')}
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Store Name</span>
-                        {storeSortField === 'name' ? (
-                          storeSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-amber-600" /> : <ArrowDown className="w-3.5 h-3.5 text-amber-600" />
-                        ) : (
-                          <ArrowUpDown className="w-3.5 h-3.5 text-zinc-400" />
-                        )}
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
                       </div>
                     </th>
                     <th
-                      className="px-6 py-4 cursor-pointer hover:text-zinc-900 transition-colors"
                       onClick={() => handleStoreSort('email')}
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Email</span>
-                        {storeSortField === 'email' ? (
-                          storeSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-amber-600" /> : <ArrowDown className="w-3.5 h-3.5 text-amber-600" />
-                        ) : (
-                          <ArrowUpDown className="w-3.5 h-3.5 text-zinc-400" />
-                        )}
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
                       </div>
                     </th>
                     <th
-                      className="px-6 py-4 cursor-pointer hover:text-zinc-900 transition-colors"
                       onClick={() => handleStoreSort('address')}
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
                     >
                       <div className="flex items-center gap-1.5">
-                        <span>Address</span>
-                        {storeSortField === 'address' ? (
-                          storeSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-amber-600" /> : <ArrowDown className="w-3.5 h-3.5 text-amber-600" />
-                        ) : (
-                          <ArrowUpDown className="w-3.5 h-3.5 text-zinc-400" />
-                        )}
+                        <span>Physical Address</span>
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
                       </div>
                     </th>
                     <th
-                      className="px-6 py-4 cursor-pointer hover:text-zinc-900 transition-colors"
-                      onClick={() => handleStoreSort('averageRating')}
+                      onClick={() => handleStoreSort('rating')}
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Overall Rating</span>
-                        {storeSortField === 'averageRating' ? (
-                          storeSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-amber-600" /> : <ArrowDown className="w-3.5 h-3.5 text-amber-600" />
-                        ) : (
-                          <ArrowUpDown className="w-3.5 h-3.5 text-zinc-400" />
-                        )}
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
                       </div>
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100">
+                <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
                   {processedStores.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-6 py-12 text-center text-zinc-400">
+                      <td colSpan={4} className="py-8 text-center text-slate-400 text-xs">
                         No stores found matching your query.
                       </td>
                     </tr>
                   ) : (
-                    processedStores.map((store) => (
-                      <tr key={store.id} className="hover:bg-zinc-50/80 transition-colors">
-                        <td className="px-6 py-4 font-semibold text-zinc-900">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-zinc-900 flex items-center justify-center text-amber-400 flex-shrink-0">
-                              <Building2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <p className="font-semibold text-zinc-900">{store.name}</p>
-                              <span className="text-[11px] text-zinc-400 font-normal">
-                                {store.category || 'General Mart'}
-                              </span>
-                            </div>
-                          </div>
+                    processedStores.map((s) => (
+                      <tr key={s.id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-4 px-5">
+                          <div className="font-bold text-slate-900">{s.name}</div>
+                          <div className="text-[11px] text-[#5B4DFF] font-medium">{s.category}</div>
                         </td>
-                        <td className="px-6 py-4 text-xs text-zinc-600">
-                          <div className="flex items-center gap-1.5">
-                            <Mail className="w-3.5 h-3.5 text-zinc-400" />
-                            <span>{store.email}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-xs text-zinc-600 max-w-xs">
-                          <div className="flex items-start gap-1.5">
-                            <MapPin className="w-3.5 h-3.5 text-zinc-400 mt-0.5 flex-shrink-0" />
-                            <span className="line-clamp-2">{store.address}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <StarRating rating={store.averageRating || 0} size="sm" />
-                            <span className="text-xs font-bold text-zinc-900">
-                              {store.averageRating ? store.averageRating.toFixed(1) : '0.0'}
-                            </span>
-                            <span className="text-[11px] text-zinc-400">
-                              ({store.totalRatings || 0})
-                            </span>
+                        <td className="py-4 px-5 text-slate-600">{s.email}</td>
+                        <td className="py-4 px-5 text-slate-500 max-w-xs truncate">{s.address}</td>
+                        <td className="py-4 px-5">
+                          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-bold text-slate-800">
+                            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                            <span>{parseFloat(s.rating || 0).toFixed(1)}</span>
+                            <span className="text-[10px] text-slate-400">({s.ratingCount || 0})</span>
                           </div>
                         </td>
                       </tr>
@@ -437,112 +340,129 @@ export const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* TAB 2: USERS TABLE */}
-          {activeTab === 'users' && (
+        {/* Tab 2: User Management */}
+        {activeTab === 'users' && (
+          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+            {/* User Filter Controls */}
+            <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="relative w-full sm:w-64">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={userSearch}
+                    onChange={(e) => setUserSearch(e.target.value)}
+                    placeholder="Search users..."
+                    className="w-full pl-9 pr-4 py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-slate-800 text-xs rounded-full border border-slate-200 outline-none transition-all placeholder:text-slate-400"
+                  />
+                </div>
+
+                <select
+                  value={userRoleFilter}
+                  onChange={(e) => setUserRoleFilter(e.target.value)}
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-full outline-none"
+                >
+                  <option value="">All Roles</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="STORE_OWNER">Store Owner</option>
+                  <option value="NORMAL_USER">Normal User</option>
+                </select>
+              </div>
+
+              <span className="text-xs text-slate-400">
+                Showing <strong className="text-slate-700">{processedUsers.length}</strong> users
+              </span>
+            </div>
+
+            {/* Users Table */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-zinc-700">
-                <thead className="bg-zinc-50 text-[11px] font-bold uppercase tracking-wider text-zinc-500 border-b border-zinc-200">
-                  <tr>
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/70 border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
                     <th
-                      className="px-6 py-4 cursor-pointer hover:text-zinc-900 transition-colors"
                       onClick={() => handleUserSort('name')}
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>User Name</span>
-                        {userSortField === 'name' ? (
-                          userSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-amber-600" /> : <ArrowDown className="w-3.5 h-3.5 text-amber-600" />
-                        ) : (
-                          <ArrowUpDown className="w-3.5 h-3.5 text-zinc-400" />
-                        )}
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
                       </div>
                     </th>
                     <th
-                      className="px-6 py-4 cursor-pointer hover:text-zinc-900 transition-colors"
                       onClick={() => handleUserSort('email')}
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Email Address</span>
-                        {userSortField === 'email' ? (
-                          userSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-amber-600" /> : <ArrowDown className="w-3.5 h-3.5 text-amber-600" />
-                        ) : (
-                          <ArrowUpDown className="w-3.5 h-3.5 text-zinc-400" />
-                        )}
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
                       </div>
                     </th>
                     <th
-                      className="px-6 py-4 cursor-pointer hover:text-zinc-900 transition-colors"
                       onClick={() => handleUserSort('address')}
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Address</span>
-                        {userSortField === 'address' ? (
-                          userSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-amber-600" /> : <ArrowDown className="w-3.5 h-3.5 text-amber-600" />
-                        ) : (
-                          <ArrowUpDown className="w-3.5 h-3.5 text-zinc-400" />
-                        )}
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
                       </div>
                     </th>
                     <th
-                      className="px-6 py-4 cursor-pointer hover:text-zinc-900 transition-colors"
                       onClick={() => handleUserSort('role')}
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Role / Store Rating</span>
-                        {userSortField === 'role' ? (
-                          userSortOrder === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-amber-600" /> : <ArrowDown className="w-3.5 h-3.5 text-amber-600" />
-                        ) : (
-                          <ArrowUpDown className="w-3.5 h-3.5 text-zinc-400" />
-                        )}
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
                       </div>
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100">
+                <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
                   {processedUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-6 py-12 text-center text-zinc-400">
-                        No users found matching your query.
+                      <td colSpan={4} className="py-8 text-center text-slate-400 text-xs">
+                        No users found matching your filters.
                       </td>
                     </tr>
                   ) : (
-                    processedUsers.map((item) => (
-                      <tr key={item.id} className="hover:bg-zinc-50/80 transition-colors">
-                        <td className="px-6 py-4 font-semibold text-zinc-900">
+                    processedUsers.map((u) => (
+                      <tr key={u.id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-4 px-5">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 font-bold text-xs flex-shrink-0">
-                              {item.name?.charAt(0) || 'U'}
+                            <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-xs">
+                              {u.name?.charAt(0) || 'U'}
                             </div>
                             <div>
-                              <p className="font-semibold text-zinc-900">{item.name}</p>
-                              <span className="text-[11px] text-zinc-400 font-normal">
-                                ID: {item.id}
-                              </span>
+                              <div className="font-bold text-slate-900">{u.name}</div>
+                              <div className="text-[10px] text-slate-400">ID: {u.id}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-xs text-zinc-600">
-                          <div className="flex items-center gap-1.5">
-                            <Mail className="w-3.5 h-3.5 text-zinc-400" />
-                            <span>{item.email}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-xs text-zinc-600 max-w-xs">
-                          <div className="flex items-start gap-1.5">
-                            <MapPin className="w-3.5 h-3.5 text-zinc-400 mt-0.5 flex-shrink-0" />
-                            <span className="line-clamp-2">{item.address}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
+                        <td className="py-4 px-5 text-slate-600">{u.email}</td>
+                        <td className="py-4 px-5 text-slate-500 max-w-xs truncate">{u.address}</td>
+                        <td className="py-4 px-5">
                           <div className="space-y-1">
-                            {getRoleBadge(item.role)}
-                            {item.role === 'STORE_OWNER' && item.storeRating !== undefined && (
-                              <div className="flex items-center gap-1.5 text-xs text-zinc-700 mt-1">
-                                <span className="text-amber-500 font-bold">★ {Number(item.storeRating).toFixed(1)}</span>
-                                {item.storeName && (
-                                  <span className="text-[11px] text-zinc-400 truncate max-w-[130px]" title={item.storeName}>
-                                    ({item.storeName})
+                            <span
+                              className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                u.role === 'ADMIN'
+                                  ? 'bg-[#5B4DFF]/10 text-[#5B4DFF]'
+                                  : u.role === 'STORE_OWNER'
+                                  ? 'bg-amber-500/10 text-amber-600'
+                                  : 'bg-slate-100 text-slate-600'
+                              }`}
+                            >
+                              {u.role}
+                            </span>
+                            {u.role === 'STORE_OWNER' && u.storeRating !== undefined && (
+                              <div className="text-[11px] text-slate-600 font-semibold flex items-center gap-1">
+                                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                                <span>{parseFloat(u.storeRating || 0).toFixed(1)}</span>
+                                {u.storeName && (
+                                  <span className="text-slate-400 text-[10px] truncate max-w-[120px]">
+                                    ({u.storeName})
                                   </span>
                                 )}
                               </div>
@@ -555,8 +475,8 @@ export const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Add Store Modal */}
@@ -565,7 +485,7 @@ export const AdminDashboard = () => {
           isOpen={showAddStoreModal}
           onClose={() => setShowAddStoreModal(false)}
           owners={storeOwnersList}
-          onStoreCreated={(newStore) => {
+          onStoreCreated={() => {
             fetchDashboardData();
           }}
         />
@@ -576,7 +496,7 @@ export const AdminDashboard = () => {
         <AddUserModal
           isOpen={showAddUserModal}
           onClose={() => setShowAddUserModal(false)}
-          onUserCreated={(newUser) => {
+          onUserCreated={() => {
             fetchDashboardData();
           }}
         />

@@ -1,166 +1,179 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { validatePassword } from '../../utils/validators';
-import { X, Lock, KeyRound, CheckCircle2, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { X, KeyRound, Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const ChangePasswordModal = ({ isOpen, onClose }) => {
   const { changePassword } = useAuth();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPass, setShowPass] = useState(false);
+
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [status, setStatus] = useState({ type: '', message: '' });
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus({ type: '', message: '' });
+    setError('');
+    setSuccess('');
 
     if (!currentPassword) {
-      setStatus({ type: 'error', message: 'Current password is required.' });
+      setError('Please enter your current password.');
       return;
     }
 
-    const passVal = validatePassword(newPassword);
-    if (!passVal.isValid) {
-      setStatus({ type: 'error', message: passVal.message });
+    const passCheck = validatePassword(newPassword);
+    if (!passCheck.isValid) {
+      setError(passCheck.message);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setStatus({ type: 'error', message: 'New password and confirmation do not match.' });
+      setError('New passwords do not match.');
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      setError('New password must be different from current password.');
       return;
     }
 
     setSubmitting(true);
-    const res = await changePassword(currentPassword, newPassword);
-    setSubmitting(false);
-
-    if (res.success) {
-      setStatus({ type: 'success', message: 'Your password has been changed successfully.' });
-      setTimeout(() => {
-        onClose();
-      }, 1500);
-    } else {
-      setStatus({ type: 'error', message: res.error || 'Failed to update password.' });
+    try {
+      const res = await changePassword(currentPassword, newPassword);
+      if (res.success) {
+        setSuccess('Password changed successfully!');
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      } else {
+        setError(res.error || 'Failed to update password.');
+      }
+    } catch (err) {
+      setError('Error updating password. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md modal-backdrop-animate">
-      <div className="relative w-full max-w-md rounded-2xl bg-white border border-zinc-200 shadow-2xl overflow-hidden modal-content-animate">
-        {/* Header with Obsidian gradient */}
-        <div className="bg-[#09090B] px-6 py-5 text-white flex items-center justify-between border-b border-zinc-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <KeyRound className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden animate-scale-in">
+        {/* Header */}
+        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#5B4DFF]/10 text-[#5B4DFF] flex items-center justify-center font-bold">
+              <KeyRound className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-serif text-lg font-bold text-white">Change Password</h3>
-              <p className="text-xs text-zinc-400">Update your security credentials</p>
+              <h3 className="text-sm font-bold text-slate-900">Change Account Password</h3>
+              <p className="text-[11px] text-slate-400">Security Credentials Update</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-colors"
+            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {status.message && (
-            <div
-              className={`p-3.5 rounded-xl text-sm flex items-start gap-2.5 ${
-                status.type === 'success'
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                  : 'bg-rose-50 text-rose-800 border border-rose-200'
-              }`}
-            >
-              {status.type === 'success' ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-              ) : (
-                <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
-              )}
-              <span>{status.message}</span>
+          {error && (
+            <div className="p-3 rounded-2xl bg-rose-50 text-rose-800 border border-rose-200 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
-          {/* Current Password */}
+          {success && (
+            <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              <span>{success}</span>
+            </div>
+          )}
+
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 mb-1.5">
-              Current Password
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1 flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-slate-400" />
+              Current Password *
             </label>
             <div className="relative">
               <input
-                type={showPass ? 'text' : 'password'}
+                type={showCurrent ? 'text' : 'password'}
+                required
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="••••••••••••"
-                required
-                className="w-full px-4 py-2.5 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm transition-all"
-              />
-            </div>
-          </div>
-
-          {/* New Password */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 mb-1.5">
-              New Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPass ? 'text' : 'password'}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="8-16 chars, 1 uppercase, 1 special"
-                required
-                className="w-full px-4 py-2.5 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm transition-all"
+                placeholder="Enter current password"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:border-[#5B4DFF]/50 focus:ring-2 focus:ring-[#5B4DFF]/10 text-xs text-slate-800 outline-none transition-all"
               />
               <button
                 type="button"
-                onClick={() => setShowPass(!showPass)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+                onClick={() => setShowCurrent(!showCurrent)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
               >
-                {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showCurrent ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
             </div>
-            <p className="text-[11px] text-zinc-500 mt-1">
-              Must be 8-16 characters with at least 1 uppercase and 1 special symbol.
-            </p>
           </div>
 
-          {/* Confirm New Password */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 mb-1.5">
-              Confirm New Password
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1 flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-slate-400" />
+              New Password *
+            </label>
+            <div className="relative">
+              <input
+                type={showNew ? 'text' : 'password'}
+                required
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="8-16 chars (1 Upper, 1 Spec)"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:border-[#5B4DFF]/50 focus:ring-2 focus:ring-[#5B4DFF]/10 text-xs text-slate-800 outline-none transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNew(!showNew)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              >
+                {showNew ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1 flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-slate-400" />
+              Confirm New Password *
             </label>
             <input
-              type={showPass ? 'text' : 'password'}
+              type={showNew ? 'text' : 'password'}
+              required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm new password"
-              required
-              className="w-full px-4 py-2.5 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm transition-all"
+              placeholder="Re-enter new password"
+              className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:border-[#5B4DFF]/50 focus:ring-2 focus:ring-[#5B4DFF]/10 text-xs text-slate-800 outline-none transition-all"
             />
           </div>
 
-          {/* Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-zinc-100">
+          <div className="flex items-center justify-end gap-2.5 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl text-sm font-semibold text-zinc-600 hover:bg-zinc-100 transition-colors"
+              className="px-4 py-2 rounded-full text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2.5 rounded-xl bg-gold-gradient text-zinc-950 font-semibold text-sm shadow-gold-glow hover:shadow-gold-glow-lg transition-all disabled:opacity-50"
+              className="px-6 py-2 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white text-xs font-bold shadow-[0_4px_12px_rgba(91,77,255,0.25)] transition-all disabled:opacity-50"
             >
               {submitting ? 'Updating...' : 'Update Password'}
             </button>

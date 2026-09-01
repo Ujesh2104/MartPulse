@@ -1,36 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { ownerAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { StarRating } from '../components/StarRating';
 import {
-  Store,
   Star,
   Users,
-  TrendingUp,
-  MessageSquare,
-  Sparkles,
-  MapPin,
-  Calendar,
-  Award,
-  CheckCircle,
+  Building2,
   RefreshCw,
   Search,
+  MessageSquare,
+  TrendingUp,
+  Award,
+  Filter,
 } from 'lucide-react';
 
 export const OwnerDashboard = () => {
   const { user } = useAuth();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchReview, setSearchReview] = useState('');
-  const [ratingFilter, setRatingFilter] = useState('ALL');
-
-  useEffect(() => {
-    fetchOwnerData();
-  }, []);
+  const [starFilter, setStarFilter] = useState('all');
+  const [searchFeedback, setSearchFeedback] = useState('');
 
   const fetchOwnerData = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       const res = await ownerAPI.getOwnerDashboard();
       if (res && res.success) {
         setDashboardData(res);
@@ -42,120 +34,120 @@ export const OwnerDashboard = () => {
     }
   };
 
+  useEffect(() => {
+    fetchOwnerData();
+  }, []);
+
   const store = dashboardData?.store;
-  const stats = dashboardData?.stats;
+  const ratingStats = dashboardData?.ratingStats;
   const reviews = dashboardData?.reviews || [];
 
   const filteredReviews = reviews.filter((r) => {
-    const q = searchReview.toLowerCase();
-    const matchesQuery =
-      r.userName.toLowerCase().includes(q) ||
-      (r.comment && r.comment.toLowerCase().includes(q));
-    const matchesRating = ratingFilter === 'ALL' || r.rating === Number(ratingFilter);
-    return matchesQuery && matchesRating;
+    const matchesStar = starFilter === 'all' || r.rating === parseInt(starFilter);
+    const matchesSearch =
+      !searchFeedback ||
+      (r.userName && r.userName.toLowerCase().includes(searchFeedback.toLowerCase())) ||
+      (r.comment && r.comment.toLowerCase().includes(searchFeedback.toLowerCase()));
+    return matchesStar && matchesSearch;
   });
 
-  const totalReviewsCount = stats?.totalRatings || reviews.length;
-
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[#FAFAFA] py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header Ribbon */}
-        <div className="bg-[#09090B] text-white p-6 sm:p-8 rounded-3xl border border-zinc-800 shadow-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-xs font-semibold uppercase tracking-widest text-amber-400 mb-2">
-              <Store className="w-3.5 h-3.5" />
-              <span>Store Owner Management Console</span>
-            </div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              {store?.name || 'Your Managed Store'}
+    <div className="min-h-screen bg-[#F4F5FA] py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Top Header Card */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <span className="px-3 py-1 rounded-full bg-[#5B4DFF]/10 text-[#5B4DFF] text-xs font-bold">
+              🛒 Store Owner Console
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              {store?.name || 'Your Retail Mart'}
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-zinc-500" />
-              <span>{store?.address}</span>
+            <p className="text-xs sm:text-sm text-slate-500">
+              {store?.address} • Category: <strong className="text-slate-700">{store?.category}</strong>
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={fetchOwnerData}
-              className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
-              title="Refresh Analytics"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
+          <button
+            onClick={fetchOwnerData}
+            className="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors flex items-center gap-2 text-xs font-bold"
+            title="Refresh Ratings"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
         </div>
 
-        {/* 1. STORE RATING OVERVIEW & DISTRIBUTION CARDS */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up">
-          {/* Card 1: Average Rating Score Card */}
-          <div className="bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm flex flex-col justify-between space-y-6 hover-lift">
-            <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 block">
-                Store Performance Overview
-              </span>
-              <h3 className="font-serif text-xl font-bold text-zinc-900 mt-1">
-                Average Customer Score
-              </h3>
-            </div>
+        {/* 2 Main Overview Cards: Average Score + Star Distribution */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Average Rating Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-4 flex flex-col justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Average Customer Score
+            </span>
 
-            <div className="flex items-baseline gap-4">
-              <span className="font-serif text-6xl font-extrabold text-zinc-900">
-                {stats?.averageRating ? Number(stats.averageRating).toFixed(1) : '0.0'}
-              </span>
-              <div className="space-y-1">
-                <StarRating rating={stats?.averageRating || 0} size="md" />
-                <p className="text-xs text-zinc-500 font-medium">
-                  Out of 5.0 ({totalReviewsCount} ratings)
-                </p>
+            <div className="space-y-2">
+              <div className="flex items-baseline gap-3">
+                <span className="text-5xl font-extrabold text-slate-900">
+                  {parseFloat(ratingStats?.averageRating || store?.rating || 0).toFixed(1)}
+                </span>
+                <div className="flex text-amber-400">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-5 h-5 ${
+                        i < Math.round(ratingStats?.averageRating || store?.rating || 0)
+                          ? 'fill-amber-400 text-amber-400'
+                          : 'text-slate-200'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
+              <p className="text-xs text-slate-500 font-medium">
+                Based on <strong className="text-slate-800">{ratingStats?.totalRatings || reviews.length}</strong> authenticated shopper reviews
+              </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 flex items-center gap-3">
-              <Award className="w-5 h-5 text-amber-600 flex-shrink-0" />
-              <span>
-                Your store ranks in the <strong>top 10%</strong> of verified retail marts in the region!
-              </span>
+            <div className="p-3 rounded-2xl bg-[#5B4DFF]/5 border border-[#5B4DFF]/15 text-xs text-[#5B4DFF] font-semibold flex items-center gap-2">
+              <Award className="w-4 h-4 text-[#5B4DFF] flex-shrink-0" />
+              <span>Verified Store Analytics</span>
             </div>
           </div>
 
-          {/* Card 2: Rating Distribution Breakdown */}
-          <div className="lg:col-span-2 bg-white p-8 rounded-3xl border border-zinc-200 shadow-sm space-y-4 hover-lift">
+          {/* Star Distribution Curve (Matching Reference Curve style) */}
+          <div className="md:col-span-2 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400 block">
-                  Rating Breakdown
-                </span>
-                <h3 className="font-serif text-xl font-bold text-zinc-900 mt-1">
-                  Star Distribution
-                </h3>
-              </div>
-              <span className="text-xs font-bold text-zinc-500 bg-zinc-100 px-3 py-1 rounded-full">
-                {totalReviewsCount} Total Reviews
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Star Rating Breakdown
+              </span>
+              <span className="text-xs text-slate-400 font-medium">
+                {reviews.length} Total Submissions
               </span>
             </div>
 
-            <div className="space-y-2.5 pt-2">
-              {[5, 4, 3, 2, 1].map((stars) => {
-                const count = stats?.ratingDistribution?.[stars] || 0;
-                const percentage =
-                  totalReviewsCount > 0 ? Math.round((count / totalReviewsCount) * 100) : 0;
+            <div className="space-y-2.5 pt-1">
+              {[5, 4, 3, 2, 1].map((star) => {
+                const count = ratingStats?.distribution?.[star] || 0;
+                const total = ratingStats?.totalRatings || (reviews.length > 0 ? reviews.length : 1);
+                const percent = Math.round((count / (total || 1)) * 100);
 
                 return (
-                  <div key={stars} className="flex items-center gap-3 text-xs">
-                    <div className="flex items-center gap-1 w-16 font-semibold text-zinc-700">
-                      <span>{stars}</span>
-                      <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                    </div>
-                    <div className="flex-1 h-3 bg-zinc-100 rounded-full overflow-hidden">
+                  <div key={star} className="flex items-center gap-3 text-xs">
+                    <span className="w-6 font-bold text-slate-700 flex items-center gap-1">
+                      <span>{star}</span>
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    </span>
+
+                    <div className="flex-grow h-2.5 bg-slate-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gold-gradient rounded-full transition-all duration-500"
-                        style={{ width: `${percentage}%` }}
+                        className="h-full bg-[#5B4DFF] rounded-full transition-all duration-500"
+                        style={{ width: `${percent}%` }}
                       ></div>
                     </div>
-                    <span className="w-12 text-right font-mono text-zinc-500">
-                      {count} ({percentage}%)
+
+                    <span className="w-16 text-right font-medium text-slate-500 text-[11px]">
+                      {count} ({percent}%)
                     </span>
                   </div>
                 );
@@ -164,112 +156,103 @@ export const OwnerDashboard = () => {
           </div>
         </div>
 
-        {/* 2. CUSTOMER REVIEWS TABLE */}
-        <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden space-y-4">
-          <div className="p-6 border-b border-zinc-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Customer Reviews & Feedback Section */}
+        <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 space-y-5">
+          {/* Header + Filter Pill Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
             <div>
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-amber-600" />
-                <h3 className="font-serif text-xl font-bold text-zinc-900">
-                  Customer Ratings & Feedback
-                </h3>
-              </div>
-              <p className="text-xs text-zinc-500 mt-0.5">
-                List of authenticated users who have submitted reviews for your store.
+              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-[#5B4DFF]" />
+                Customer Ratings & Feedback
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                List of authenticated shoppers who have submitted reviews for your store
               </p>
             </div>
 
-            {/* Filter & Search */}
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="relative w-48">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchFeedback}
+                  onChange={(e) => setSearchFeedback(e.target.value)}
+                  placeholder="Filter reviews..."
+                  className="w-full pl-8 pr-3 py-1.5 bg-slate-50 text-slate-800 text-xs rounded-full border border-slate-200 outline-none"
+                />
+              </div>
+
               <select
-                value={ratingFilter}
-                onChange={(e) => setRatingFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-zinc-200 text-xs bg-white focus:outline-none focus:border-amber-500"
+                value={starFilter}
+                onChange={(e) => setStarFilter(e.target.value)}
+                className="px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-full outline-none"
               >
-                <option value="ALL">All Stars</option>
+                <option value="all">All Stars</option>
                 <option value="5">5 Stars</option>
                 <option value="4">4 Stars</option>
                 <option value="3">3 Stars</option>
                 <option value="2">2 Stars</option>
                 <option value="1">1 Star</option>
               </select>
-
-              <div className="relative w-full sm:w-60">
-                <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={searchReview}
-                  onChange={(e) => setSearchReview(e.target.value)}
-                  placeholder="Filter customer reviews..."
-                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-zinc-200 text-xs focus:outline-none focus:border-amber-500"
-                />
-              </div>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-zinc-700">
-              <thead className="bg-zinc-50 text-[11px] font-bold uppercase tracking-wider text-zinc-500 border-b border-zinc-200">
-                <tr>
-                  <th className="px-6 py-4">Customer Name</th>
-                  <th className="px-6 py-4">Email</th>
-                  <th className="px-6 py-4">Rating</th>
-                  <th className="px-6 py-4">Shopper Feedback</th>
-                  <th className="px-6 py-4">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100">
-                {filteredReviews.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-zinc-400">
-                      No customer reviews found matching your criteria.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredReviews.map((rev) => (
-                    <tr key={rev.id} className="hover:bg-zinc-50/80 transition-colors">
-                      <td className="px-6 py-4 font-semibold text-zinc-900">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-lg bg-zinc-900 text-amber-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                            {rev.userName?.charAt(0) || 'U'}
-                          </div>
-                          <span>{rev.userName}</span>
+          {/* Review Cards Grid */}
+          {loading ? (
+            <div className="py-12 text-center text-slate-400 text-xs animate-pulse">
+              Loading reviews...
+            </div>
+          ) : filteredReviews.length === 0 ? (
+            <div className="py-12 text-center space-y-2">
+              <MessageSquare className="w-8 h-8 text-slate-300 mx-auto" />
+              <p className="text-xs font-semibold text-slate-500">No customer reviews yet.</p>
+              <p className="text-[11px] text-slate-400">
+                Shoppers who rate your mart will appear here in real time.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredReviews.map((rev) => (
+                <div
+                  key={rev.id}
+                  className="p-5 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-3"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-[#5B4DFF]/10 text-[#5B4DFF] font-bold text-xs flex items-center justify-center">
+                        {rev.userName?.charAt(0) || 'S'}
+                      </div>
+                      <div>
+                        <div className="font-bold text-xs text-slate-900">{rev.userName}</div>
+                        <div className="text-[10px] text-slate-400">
+                          {rev.createdAt
+                            ? new Date(rev.createdAt).toLocaleDateString()
+                            : 'Verified Buyer'}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-xs text-zinc-500 font-mono">
-                        {rev.userEmail}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5">
-                          <StarRating rating={rev.rating} size="sm" />
-                          <span className="text-xs font-bold text-zinc-900">
-                            {rev.rating}.0
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-xs text-zinc-600 max-w-sm">
-                        {rev.comment ? (
-                          <span className="italic">"{rev.comment}"</span>
-                        ) : (
-                          <span className="text-zinc-400 italic">No comment provided</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-xs text-zinc-400 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-zinc-400" />
-                          <span>
-                            {rev.createdAt
-                              ? new Date(rev.createdAt).toLocaleDateString()
-                              : 'Recent'}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </div>
+
+                    <div className="flex text-amber-400">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-3.5 h-3.5 ${
+                            i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {rev.comment && (
+                    <p className="text-xs text-slate-600 italic bg-white p-3 rounded-xl border border-slate-100">
+                      "{rev.comment}"
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

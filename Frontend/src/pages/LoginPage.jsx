@@ -1,29 +1,29 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { validateEmail } from '../utils/validators';
 import {
-  Activity,
   Lock,
   Mail,
   ArrowRight,
   AlertCircle,
   Eye,
   EyeOff,
-  Sparkles,
   ShieldCheck,
   UserCheck,
+  Sparkles,
 } from 'lucide-react';
+import MartPulseLogo from '../components/MartPulseLogo';
 
 export const LoginPage = () => {
   const { login, loading, authError } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState('');
+  const [selectedRole, setSelectedRole] = useState(null);
 
   const redirectByRole = (role) => {
     if (role === 'ADMIN') {
@@ -56,9 +56,6 @@ export const LoginPage = () => {
     }
   };
 
-  const [selectedRole, setSelectedRole] = useState(null);
-
-  // Fill demo accounts credentials
   const handleQuickFill = (demoEmail, demoPassword, roleName) => {
     setEmail(demoEmail);
     setPassword(demoPassword);
@@ -67,37 +64,32 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[#FAFAFA] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background ambient decorative shapes */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-zinc-800/10 rounded-full blur-[80px] pointer-events-none"></div>
-
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10 animate-fade-in-down">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#09090B] border border-amber-500/40 shadow-gold-glow mb-4 hover:scale-105 transition-transform">
-          <Activity className="w-8 h-8 text-amber-500 animate-pulse-glow" />
+    <div className="min-h-[calc(100vh-80px)] bg-[#F4F5FA] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-2">
+        <div className="flex justify-center mb-2">
+          <MartPulseLogo size="lg" />
         </div>
-        <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
-          Welcome to <span className="text-amber-600">MartPulse</span>
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Welcome back
         </h2>
-        <p className="mt-2 text-sm text-zinc-500">
-          Sign in to access your customized role dashboard and community ratings
+        <p className="text-xs text-slate-500">
+          Sign in to access your role dashboard and community ratings
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0 animate-fade-in-up">
-        <div className="bg-white py-8 px-6 sm:px-10 rounded-3xl border border-zinc-200 shadow-xl space-y-6 hover-lift">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-6 sm:px-10 rounded-3xl border border-slate-200/80 shadow-xs space-y-6">
           {(formError || authError) && (
-            <div className="p-3.5 rounded-xl bg-rose-50 text-rose-800 border border-rose-200 text-sm flex items-center gap-2.5">
-              <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-rose-50 text-rose-800 border border-rose-200 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
               <span>{formError || authError}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email field */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-zinc-500" />
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1.5 flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-slate-400" />
                 Email Address
               </label>
               <input
@@ -105,21 +97,17 @@ export const LoginPage = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@domain.com"
-                className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm transition-all bg-zinc-50/50"
+                placeholder="name@example.com"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:border-[#5B4DFF]/50 focus:ring-2 focus:ring-[#5B4DFF]/10 text-xs text-slate-800 outline-none transition-all"
               />
             </div>
 
-            {/* Password field */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-700 flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-zinc-500" />
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-slate-400" />
                   Password
                 </label>
-                <span className="text-xs text-amber-600 hover:underline cursor-pointer">
-                  Forgot password?
-                </span>
               </div>
               <div className="relative">
                 <input
@@ -128,23 +116,22 @@ export const LoginPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm transition-all bg-zinc-50/50"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:border-[#5B4DFF]/50 focus:ring-2 focus:ring-[#5B4DFF]/10 text-xs text-slate-800 outline-none transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Submit button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-gold-gradient text-zinc-950 font-bold text-sm shadow-gold-glow hover:shadow-gold-glow-lg transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+              className="w-full py-3 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white font-bold text-xs shadow-[0_4px_12px_rgba(91,77,255,0.25)] hover:shadow-[0_6px_16px_rgba(91,77,255,0.35)] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
             >
               {loading ? (
                 <span>Authenticating...</span>
@@ -157,59 +144,59 @@ export const LoginPage = () => {
             </button>
           </form>
 
-          {/* Quick Demo Credentials Autofill */}
-          <div className="pt-4 border-t border-zinc-100">
-            <p className="text-center text-xs uppercase tracking-wider font-bold text-zinc-400 mb-3">
-              ⚡ Quick Autofill Demo Credentials
+          {/* Quick Demo Autofill Pills */}
+          <div className="pt-4 border-t border-slate-100 space-y-2.5">
+            <p className="text-center text-[10px] uppercase tracking-wider font-extrabold text-slate-400">
+              ⚡ Quick Autofill Demo Profiles
             </p>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => handleQuickFill('admin@martpulse.com', 'Admin@12345', 'ADMIN')}
-                className={`p-2.5 rounded-xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border ${
+                className={`p-2.5 rounded-2xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border ${
                   selectedRole === 'ADMIN'
-                    ? 'bg-amber-500/10 text-amber-500 border-amber-500 shadow-sm'
-                    : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800 hover:text-white'
+                    ? 'bg-[#5B4DFF]/10 text-[#5B4DFF] border-[#5B4DFF]'
+                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                 }`}
-                title="Autofill Administrator Credentials"
+                title="Autofill Administrator"
               >
-                <ShieldCheck className="w-4 h-4 text-amber-500" />
+                <ShieldCheck className="w-4 h-4 text-[#5B4DFF]" />
                 <span>Admin</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleQuickFill('owner@martpulse.com', 'Owner@12345', 'STORE_OWNER')}
-                className={`p-2.5 rounded-xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border ${
+                className={`p-2.5 rounded-2xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border ${
                   selectedRole === 'STORE_OWNER'
-                    ? 'bg-amber-500/10 text-amber-500 border-amber-500 shadow-sm'
-                    : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800 hover:text-white'
+                    ? 'bg-[#5B4DFF]/10 text-[#5B4DFF] border-[#5B4DFF]'
+                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                 }`}
-                title="Autofill Store Owner Credentials"
+                title="Autofill Store Owner"
               >
-                <UserCheck className="w-4 h-4 text-amber-500" />
+                <UserCheck className="w-4 h-4 text-[#5B4DFF]" />
                 <span>Store Owner</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleQuickFill('user@martpulse.com', 'User@12345', 'NORMAL_USER')}
-                className={`p-2.5 rounded-xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border ${
+                className={`p-2.5 rounded-2xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border ${
                   selectedRole === 'NORMAL_USER'
-                    ? 'bg-amber-500/10 text-amber-500 border-amber-500 shadow-sm'
-                    : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800 hover:text-white'
+                    ? 'bg-[#5B4DFF]/10 text-[#5B4DFF] border-[#5B4DFF]'
+                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                 }`}
-                title="Autofill Normal User Credentials"
+                title="Autofill Normal User"
               >
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <span>Normal User</span>
+                <Sparkles className="w-4 h-4 text-[#5B4DFF]" />
+                <span>Shopper</span>
               </button>
             </div>
           </div>
 
-          <div className="text-center text-xs text-zinc-500 pt-2">
+          <div className="text-center text-xs text-slate-500 pt-1">
             Don't have an account yet?{' '}
-            <Link to="/register" className="text-amber-600 font-bold hover:underline">
+            <Link to="/register" className="text-[#5B4DFF] font-bold hover:underline">
               Create an account
             </Link>
           </div>
