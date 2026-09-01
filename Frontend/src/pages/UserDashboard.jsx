@@ -13,6 +13,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import RateStoreModal from '../components/Modals/RateStoreModal';
+import AnimatedSection from '../components/AnimatedSection';
 
 export const UserDashboard = () => {
   const { user } = useAuth();
@@ -76,34 +77,36 @@ export const UserDashboard = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#F4F5FA] py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F4F5FA] py-6 sm:py-8 px-4 sm:px-6 lg:px-8 space-y-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Header Card */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="px-3 py-1 rounded-full bg-[#5B4DFF]/10 text-[#5B4DFF] text-xs font-bold">
-              🛍️ Shopper Community Hub
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Explore & Rate Grocery Marts
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Welcome back, <strong className="text-slate-800">{user?.name}</strong>! Discover top-rated marts and share your feedback.
-            </p>
-          </div>
+        <AnimatedSection animation="fade-up">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="px-3 py-1 rounded-full bg-[#5B4DFF]/10 text-[#5B4DFF] text-xs font-bold">
+                🛍️ Shopper Community Hub
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Explore & Rate Grocery Marts
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500">
+                Welcome back, <strong className="text-slate-800">{user?.name}</strong>! Discover top-rated marts and share your feedback.
+              </p>
+            </div>
 
-          <button
-            onClick={fetchStoresData}
-            className="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200/70 text-slate-600 transition-colors flex items-center gap-2 text-xs font-bold"
-            title="Refresh Mart List"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            <span>Refresh</span>
-          </button>
-        </div>
+            <button
+              onClick={fetchStoresData}
+              className="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200/70 text-slate-600 transition-colors flex items-center gap-2 text-xs font-bold hover:scale-105"
+              title="Refresh Mart List"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <span>Refresh</span>
+            </button>
+          </div>
+        </AnimatedSection>
 
         {/* Top Category Pill Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <AnimatedSection animation="fade-up" delay={100} className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -117,12 +120,12 @@ export const UserDashboard = () => {
               {cat === 'All' ? 'All Categories' : cat}
             </button>
           ))}
-        </div>
+        </AnimatedSection>
 
         {/* Main Grid: Left Filters + Right Stores */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Left Filter Sidebar */}
-          <div className="lg:col-span-1 space-y-5">
+          <AnimatedSection animation="fade-up" delay={150} className="lg:col-span-1 space-y-5">
             {/* Search Box */}
             <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-800">
@@ -220,7 +223,7 @@ export const UserDashboard = () => {
                 ))}
               </div>
             </div>
-          </div>
+          </AnimatedSection>
 
           {/* Right Store Card Grid */}
           <div className="lg:col-span-3 space-y-4">
@@ -244,85 +247,89 @@ export const UserDashboard = () => {
                 ))}
               </div>
             ) : filteredStores.length === 0 ? (
-              <div className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center space-y-3">
+              <AnimatedSection animation="scale" className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center space-y-3">
                 <Building2 className="w-12 h-12 text-slate-300 mx-auto" />
                 <h3 className="text-base font-bold text-slate-800">No stores found</h3>
                 <p className="text-xs text-slate-500">Try adjusting your filters or search terms.</p>
-              </div>
+              </AnimatedSection>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filteredStores.map((store) => (
-                  <div
+                {filteredStores.map((store, index) => (
+                  <AnimatedSection
                     key={store.id}
-                    className="group bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between relative hover:-translate-y-1"
+                    animation="fade-up"
+                    delay={(index % 3) * 100}
+                    className="h-full"
                   >
-                    {/* Top Row: Category + Heart */}
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#5B4DFF]/10 text-[#5B4DFF]">
-                        {store.category || 'Supermarket'}
-                      </span>
-                      <button
-                        onClick={() => toggleFavorite(store.id)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border ${
-                          favorites[store.id]
-                            ? 'bg-rose-50 border-rose-200 text-rose-500'
-                            : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500'
-                        }`}
-                      >
-                        <Heart
-                          className={`w-4 h-4 ${favorites[store.id] ? 'fill-rose-500' : ''}`}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Middle Graphic / Visual */}
-                    <div className="relative rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-4 mb-4 flex items-center justify-center h-32 border border-slate-100">
-                      <Building2 className="w-12 h-12 text-[#5B4DFF]/40 group-hover:scale-110 group-hover:text-[#5B4DFF] transition-all duration-300" />
-                      
-                      {/* Overall Average Rating Score */}
-                      <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-white shadow-sm border border-slate-200/80 text-xs font-extrabold text-slate-800">
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        <span>{parseFloat(store.rating || 0).toFixed(1)}</span>
-                      </div>
-                    </div>
-
-                    {/* Store Title & Address */}
-                    <div className="space-y-1.5 mb-4 flex-grow">
-                      <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#5B4DFF] transition-colors line-clamp-1">
-                        {store.name}
-                      </h3>
-                      <p className="text-xs text-slate-500 flex items-start gap-1 line-clamp-2">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
-                        <span>{store.address}</span>
-                      </p>
-                    </div>
-
-                    {/* Bottom Action Pill Button */}
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                      <div className="text-[11px] text-slate-500 font-semibold">
-                        {store.userRating ? (
-                          <span className="text-emerald-600 flex items-center gap-1">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            Your: {store.userRating}★
-                          </span>
-                        ) : (
-                          <span>{store.ratingCount || 0} ratings</span>
-                        )}
+                    <div className="group bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative hover:-translate-y-1.5 h-full">
+                      {/* Top Row: Category + Heart */}
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#5B4DFF]/10 text-[#5B4DFF]">
+                          {store.category || 'Supermarket'}
+                        </span>
+                        <button
+                          onClick={() => toggleFavorite(store.id)}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border ${
+                            favorites[store.id]
+                              ? 'bg-rose-50 border-rose-200 text-rose-500'
+                              : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500'
+                          }`}
+                        >
+                          <Heart
+                            className={`w-4 h-4 ${favorites[store.id] ? 'fill-rose-500' : ''}`}
+                          />
+                        </button>
                       </div>
 
-                      <button
-                        onClick={() => setSelectedStoreForRating(store)}
-                        className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${
-                          store.userRating
-                            ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300'
-                            : 'bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white shadow-[0_4px_10px_rgba(91,77,255,0.25)]'
-                        }`}
-                      >
-                        <Star className="w-3.5 h-3.5 fill-current" />
-                        <span>{store.userRating ? 'Edit Rating' : 'Rate Mart'}</span>
-                      </button>
+                      {/* Middle Graphic / Visual */}
+                      <div className="relative rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-4 mb-4 flex items-center justify-center h-32 border border-slate-100 overflow-hidden">
+                        <Building2 className="w-12 h-12 text-[#5B4DFF]/40 group-hover:scale-110 group-hover:text-[#5B4DFF] transition-all duration-300" />
+                        
+                        {/* Overall Average Rating Score */}
+                        <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-white shadow-sm border border-slate-200/80 text-xs font-extrabold text-slate-800">
+                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          <span>{parseFloat(store.rating || 0).toFixed(1)}</span>
+                        </div>
+                      </div>
+
+                      {/* Store Title & Address */}
+                      <div className="space-y-1.5 mb-4 flex-grow">
+                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#5B4DFF] transition-colors line-clamp-1">
+                          {store.name}
+                        </h3>
+                        <p className="text-xs text-slate-500 flex items-start gap-1 line-clamp-2">
+                          <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+                          <span>{store.address}</span>
+                        </p>
+                      </div>
+
+                      {/* Bottom Action Pill Button */}
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <div className="text-[11px] text-slate-500 font-semibold">
+                          {store.userRating ? (
+                            <span className="text-emerald-600 flex items-center gap-1">
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              Your: {store.userRating}★
+                            </span>
+                          ) : (
+                            <span>{store.ratingCount || 0} ratings</span>
+                          )}
+                        </div>
+
+                        <button
+                          onClick={() => setSelectedStoreForRating(store)}
+                          className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${
+                            store.userRating
+                              ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300'
+                              : 'bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white shadow-[0_4px_10px_rgba(91,77,255,0.25)]'
+                          }`}
+                        >
+                          <Star className="w-3.5 h-3.5 fill-current" />
+                          <span>{store.userRating ? 'Edit Rating' : 'Rate Mart'}</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </AnimatedSection>
                 ))}
               </div>
             )}

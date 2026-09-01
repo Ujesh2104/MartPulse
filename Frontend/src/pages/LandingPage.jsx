@@ -21,7 +21,7 @@ import {
   ShoppingBag,
 } from 'lucide-react';
 import RateStoreModal from '../components/Modals/RateStoreModal';
-import MartPulseLogo from '../components/MartPulseLogo';
+import AnimatedSection from '../components/AnimatedSection';
 
 export const LandingPage = () => {
   const { user, isAuthenticated } = useAuth();
@@ -102,26 +102,21 @@ export const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F4F5FA] space-y-12 sm:space-y-16 pb-16">
-      {/* 1. HERO SECTION (Clean Lavender Theme with Floating Badges & Animations) */}
+      {/* 1. HERO SECTION WITH FADE-IN ANIMATION */}
       <section className="relative pt-12 sm:pt-20 pb-8 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Ambient background soft glow */}
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-3/4 h-80 bg-gradient-to-b from-[#5B4DFF]/8 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="max-w-5xl mx-auto text-center space-y-6 relative z-10 animate-fade-in-up">
-
-          {/* Heading */}
+        <AnimatedSection animation="fade-up" className="max-w-5xl mx-auto text-center space-y-6 relative z-10">
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
             Discover & Rate the Finest <br />
             <span className="text-[#5B4DFF]">Grocery Stores</span> Near You
           </h1>
 
-          {/* Subtitle */}
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
             MartPulse empowers shoppers with verified, transparent ratings for local supermarkets,
             gourmet delis, and artisan markets. Browse honest community feedback or share your own experience.
           </p>
 
-          {/* Hero Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <button
               onClick={scrollToCatalog}
@@ -139,74 +134,76 @@ export const LandingPage = () => {
             </Link>
           </div>
 
-          {/* Live Trust Metrics Bar */}
           <div className="pt-8 grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto">
-            <div className="p-3 sm:p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-slate-200/80 shadow-2xs">
+            <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-2xs hover:scale-105 transition-transform duration-300">
               <div className="text-base sm:text-xl font-extrabold text-slate-900">4.9 ★</div>
               <div className="text-[10px] sm:text-xs text-slate-500 font-medium">Avg Verified Score</div>
             </div>
-            <div className="p-3 sm:p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-slate-200/80 shadow-2xs">
+            <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-2xs hover:scale-105 transition-transform duration-300">
               <div className="text-base sm:text-xl font-extrabold text-slate-900">100%</div>
               <div className="text-[10px] sm:text-xs text-slate-500 font-medium">Authentic Feedback</div>
             </div>
-            <div className="p-3 sm:p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-slate-200/80 shadow-2xs">
+            <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-2xs hover:scale-105 transition-transform duration-300">
               <div className="text-base sm:text-xl font-extrabold text-slate-900">3 Roles</div>
               <div className="text-[10px] sm:text-xs text-slate-500 font-medium">Dedicated Portals</div>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
-      {/* 2. HOW IT WORKS SECTION (3 Clean White Cards) */}
+      {/* 2. HOW IT WORKS SECTION WITH STAGGERED FADE-IN */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center space-y-2 mb-8 animate-fade-in">
+        <AnimatedSection animation="fade-up" className="text-center space-y-2 mb-8">
           <span className="text-xs font-bold uppercase tracking-wider text-[#5B4DFF]">
             Simple & Transparent
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             How MartPulse Operates
           </h2>
-        </div>
+        </AnimatedSection>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1 */}
-          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 space-y-3 hover:-translate-y-1">
-            <div className="w-10 h-10 rounded-2xl bg-[#5B4DFF]/10 text-[#5B4DFF] flex items-center justify-center font-extrabold text-sm">
-              01
+          <AnimatedSection animation="fade-up" delay={100}>
+            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 space-y-3 hover:-translate-y-1">
+              <div className="w-10 h-10 rounded-2xl bg-[#5B4DFF]/10 text-[#5B4DFF] flex items-center justify-center font-extrabold text-sm">
+                01
+              </div>
+              <h3 className="text-base font-bold text-slate-900">Explore Nearby Marts</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Search by mart name, address, or category. View average star ratings and authentic customer review streams.
+              </p>
             </div>
-            <h3 className="text-base font-bold text-slate-900">Explore Nearby Marts</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Search by mart name, address, or category. View average star ratings and authentic customer review streams.
-            </p>
-          </div>
+          </AnimatedSection>
 
-          {/* Card 2 */}
-          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 space-y-3 hover:-translate-y-1">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-extrabold text-sm">
-              02
+          <AnimatedSection animation="fade-up" delay={200}>
+            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 space-y-3 hover:-translate-y-1">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-extrabold text-sm">
+                02
+              </div>
+              <h3 className="text-base font-bold text-slate-900">Grade with 1-5 Stars</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Rate produce freshness, staff courtesy, and checkout speed. Modify your rating anytime as services evolve.
+              </p>
             </div>
-            <h3 className="text-base font-bold text-slate-900">Grade with 1-5 Stars</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Rate produce freshness, staff courtesy, and checkout speed. Modify your rating anytime as services evolve.
-            </p>
-          </div>
+          </AnimatedSection>
 
-          {/* Card 3 */}
-          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 space-y-3 hover:-translate-y-1">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-extrabold text-sm">
-              03
+          <AnimatedSection animation="fade-up" delay={300}>
+            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 space-y-3 hover:-translate-y-1">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-extrabold text-sm">
+                03
+              </div>
+              <h3 className="text-base font-bold text-slate-900">Empower Local Retailers</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Store owners receive dedicated analytics consoles with review curves to continuously refine their supermarket aisles.
+              </p>
             </div>
-            <h3 className="text-base font-bold text-slate-900">Empower Local Retailers</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Store owners receive dedicated analytics consoles with review curves to continuously refine their supermarket aisles.
-            </p>
-          </div>
+          </AnimatedSection>
         </div>
       </section>
 
-      {/* 3. LIVE INTERACTIVE MARTS CATALOG (Matching Reference Image Grid) */}
+      {/* 3. LIVE INTERACTIVE MARTS CATALOG */}
       <section id="marts-catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-4">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-2 border-b border-slate-200/80">
+        <AnimatedSection animation="fade-up" className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-2 border-b border-slate-200/80">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-[#5B4DFF]">
               Live Catalog
@@ -218,10 +215,10 @@ export const LandingPage = () => {
           <p className="text-xs text-slate-500">
             Real-time community database updated via MySQL & Sequelize
           </p>
-        </div>
+        </AnimatedSection>
 
-        {/* Top Category Filter Pill Bar (Matching Reference Image) */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        {/* Top Category Filter Pill Bar */}
+        <AnimatedSection animation="fade-up" delay={100} className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -235,12 +232,12 @@ export const LandingPage = () => {
               {cat === 'All' ? 'All Categories' : cat}
             </button>
           ))}
-        </div>
+        </AnimatedSection>
 
         {/* Main Grid: Left Sidebar Filters + Right Store Card Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Left Filter Sidebar */}
-          <div className="lg:col-span-1 space-y-5">
+          <AnimatedSection animation="fade-up" delay={150} className="lg:col-span-1 space-y-5">
             {/* Search Box */}
             <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-800">
@@ -338,9 +335,9 @@ export const LandingPage = () => {
                 ))}
               </div>
             </div>
-          </div>
+          </AnimatedSection>
 
-          {/* Right Store Card Grid (Matching Reference Image Grid) */}
+          {/* Right Store Card Grid */}
           <div className="lg:col-span-3 space-y-4">
             <div className="flex items-center justify-between px-1">
               <h3 className="text-sm font-bold text-slate-800">
@@ -365,77 +362,80 @@ export const LandingPage = () => {
                 ))}
               </div>
             ) : filteredStores.length === 0 ? (
-              <div className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center space-y-3">
+              <AnimatedSection animation="scale" className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center space-y-3">
                 <Building2 className="w-12 h-12 text-slate-300 mx-auto" />
                 <h3 className="text-base font-bold text-slate-800">No stores found</h3>
                 <p className="text-xs text-slate-500">
                   Try adjusting your search query or choosing another category.
                 </p>
-              </div>
+              </AnimatedSection>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filteredStores.map((store) => (
-                  <div
+                {filteredStores.map((store, index) => (
+                  <AnimatedSection
                     key={store.id}
-                    className="group bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between relative hover:-translate-y-1"
+                    animation="fade-up"
+                    delay={(index % 3) * 100}
+                    className="h-full"
                   >
-                    {/* Top Row: Category + Heart Favorite */}
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#5B4DFF]/10 text-[#5B4DFF]">
-                        {store.category || 'Supermarket'}
-                      </span>
-                      <button
-                        onClick={() => toggleFavorite(store.id)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border ${
-                          favorites[store.id]
-                            ? 'bg-rose-50 border-rose-200 text-rose-500'
-                            : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-200'
-                        }`}
-                        title="Save to favorites"
-                      >
-                        <Heart
-                          className={`w-4 h-4 ${favorites[store.id] ? 'fill-rose-500' : ''}`}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Middle Graphic */}
-                    <div className="relative rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-4 mb-4 flex items-center justify-center h-32 border border-slate-100">
-                      <Building2 className="w-12 h-12 text-[#5B4DFF]/40 group-hover:scale-110 group-hover:text-[#5B4DFF] transition-all duration-300" />
-                      
-                      {/* Rating Score Badge */}
-                      <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-white shadow-sm border border-slate-200/80 text-xs font-extrabold text-slate-800">
-                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        <span>{parseFloat(store.rating || 0).toFixed(1)}</span>
-                      </div>
-                    </div>
-
-                    {/* Store Title & Address */}
-                    <div className="space-y-1.5 mb-4 flex-grow">
-                      <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#5B4DFF] transition-colors line-clamp-1">
-                        {store.name}
-                      </h3>
-                      <p className="text-xs text-slate-500 flex items-start gap-1 line-clamp-2">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
-                        <span>{store.address}</span>
-                      </p>
-                    </div>
-
-                    {/* Bottom Action Pill Button */}
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                      <div className="text-[11px] text-slate-400 font-medium">
-                        {store.ratingCount || 0} reviews
+                    <div className="group bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative hover:-translate-y-1.5 h-full">
+                      {/* Top Row */}
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#5B4DFF]/10 text-[#5B4DFF]">
+                          {store.category || 'Supermarket'}
+                        </span>
+                        <button
+                          onClick={() => toggleFavorite(store.id)}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border ${
+                            favorites[store.id]
+                              ? 'bg-rose-50 border-rose-200 text-rose-500'
+                              : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-200'
+                          }`}
+                          title="Save to favorites"
+                        >
+                          <Heart
+                            className={`w-4 h-4 ${favorites[store.id] ? 'fill-rose-500' : ''}`}
+                          />
+                        </button>
                       </div>
 
-                      <button
-                        onClick={() => handleRateClick(store)}
-                        className="px-4 py-2 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white text-xs font-bold shadow-[0_4px_10px_rgba(91,77,255,0.25)] hover:shadow-[0_6px_14px_rgba(91,77,255,0.35)] transition-all flex items-center gap-1.5"
-                      >
-                        <Star className="w-3.5 h-3.5 fill-white text-white" />
-                        <span>{store.userRating ? `Rated: ${store.userRating}★` : 'Rate Mart'}</span>
-                      </button>
+                      {/* Middle Graphic */}
+                      <div className="relative rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-4 mb-4 flex items-center justify-center h-32 border border-slate-100 overflow-hidden">
+                        <Building2 className="w-12 h-12 text-[#5B4DFF]/40 group-hover:scale-110 group-hover:text-[#5B4DFF] transition-all duration-300" />
+                        
+                        <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-white shadow-sm border border-slate-200/80 text-xs font-extrabold text-slate-800">
+                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          <span>{parseFloat(store.rating || 0).toFixed(1)}</span>
+                        </div>
+                      </div>
+
+                      {/* Store Title & Address */}
+                      <div className="space-y-1.5 mb-4 flex-grow">
+                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#5B4DFF] transition-colors line-clamp-1">
+                          {store.name}
+                        </h3>
+                        <p className="text-xs text-slate-500 flex items-start gap-1 line-clamp-2">
+                          <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+                          <span>{store.address}</span>
+                        </p>
+                      </div>
+
+                      {/* Bottom Action Pill */}
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <div className="text-[11px] text-slate-400 font-medium">
+                          {store.ratingCount || 0} reviews
+                        </div>
+
+                        <button
+                          onClick={() => handleRateClick(store)}
+                          className="px-4 py-2 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white text-xs font-bold shadow-[0_4px_10px_rgba(91,77,255,0.25)] hover:shadow-[0_6px_14px_rgba(91,77,255,0.35)] transition-all flex items-center gap-1.5"
+                        >
+                          <Star className="w-3.5 h-3.5 fill-white text-white" />
+                          <span>{store.userRating ? `Rated: ${store.userRating}★` : 'Rate Mart'}</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </AnimatedSection>
                 ))}
               </div>
             )}
@@ -443,36 +443,38 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* 4. CALL TO ACTION SECTION */}
+      {/* 4. CALL TO ACTION SECTION WITH SCALE-IN ANIMATION */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-sm text-center space-y-5 relative overflow-hidden">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#5B4DFF]/10 text-[#5B4DFF] mb-1">
-            <ShoppingBag className="w-6 h-6" />
+        <AnimatedSection animation="scale">
+          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-sm text-center space-y-5 relative overflow-hidden hover:shadow-md transition-shadow">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#5B4DFF]/10 text-[#5B4DFF] mb-1">
+              <ShoppingBag className="w-6 h-6" />
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Ready to Rate Your Favorite Grocery Marts?
+            </h2>
+
+            <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto leading-relaxed">
+              Join thousands of smart shoppers rating supermarket aisles, artisan bakeries, and gourmet delis across the region.
+            </p>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link
+                to="/register"
+                className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white font-bold text-xs shadow-[0_4px_16px_rgba(91,77,255,0.35)] transition-all"
+              >
+                Create Free Account
+              </Link>
+              <Link
+                to="/login"
+                className="w-full sm:w-auto px-7 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
+              >
+                Sign In to Dashboard
+              </Link>
+            </div>
           </div>
-
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Ready to Rate Your Favorite Grocery Marts?
-          </h2>
-
-          <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto leading-relaxed">
-            Join thousands of smart shoppers rating supermarket aisles, artisan bakeries, and gourmet delis across the region.
-          </p>
-
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              to="/register"
-              className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white font-bold text-xs shadow-[0_4px_16px_rgba(91,77,255,0.35)] transition-all"
-            >
-              Create Free Account
-            </Link>
-            <Link
-              to="/login"
-              className="w-full sm:w-auto px-7 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
-            >
-              Sign In to Dashboard
-            </Link>
-          </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* Interactive Rating Modal */}
