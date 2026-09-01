@@ -29,7 +29,7 @@ export const Navbar = () => {
     logout();
     setDropdownOpen(false);
     setMobileMenuOpen(false);
-    navigate('/');
+    navigate('/login');
   };
 
   const getDashboardPath = () => {
@@ -120,27 +120,38 @@ export const Navbar = () => {
                 </>
               ) : (
                 <div className="relative">
-                  <button
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-amber-500/40 transition-all duration-200 focus:outline-none"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold text-sm">
-                      {user?.name?.charAt(0) || 'U'}
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xs font-semibold text-white max-w-[130px] truncate">
-                        {user?.name}
-                      </p>
-                      <p className="text-[11px] text-zinc-400">
-                        {user?.role === 'ADMIN'
-                          ? 'Administrator'
-                          : user?.role === 'STORE_OWNER'
-                          ? 'Store Owner'
-                          : 'User'}
-                      </p>
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-zinc-400" />
-                  </button>
+                  {/* Quick Direct Logout Button */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setDropdownOpen(!dropdownOpen)}
+                      className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-amber-500/40 transition-all duration-200 focus:outline-none"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold text-xs">
+                        {user?.name?.charAt(0) || 'U'}
+                      </div>
+                      <div className="text-left">
+                        <p className="text-xs font-semibold text-white max-w-[120px] truncate">
+                          {user?.name}
+                        </p>
+                        <p className="text-[10px] text-amber-400/80 font-medium">
+                          {user?.role === 'ADMIN'
+                            ? 'Admin'
+                            : user?.role === 'STORE_OWNER'
+                            ? 'Store Owner'
+                            : 'Normal User'}
+                        </p>
+                      </div>
+                      <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+                    </button>
+
+                    <button
+                      onClick={handleLogout}
+                      className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/30 transition-all"
+                      title="Log Out & Switch Account"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  </div>
 
                   {/* Dropdown Menu */}
                   {dropdownOpen && (
