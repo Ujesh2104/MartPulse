@@ -566,8 +566,7 @@ export const AdminDashboard = () => {
           onClose={() => setShowAddStoreModal(false)}
           owners={storeOwnersList}
           onStoreCreated={(newStore) => {
-            setStores((prev) => [newStore, ...prev]);
-            setStats((prev) => ({ ...prev, totalStores: prev.totalStores + 1 }));
+            fetchDashboardData();
           }}
         />
       )}
@@ -578,8 +577,7 @@ export const AdminDashboard = () => {
           isOpen={showAddUserModal}
           onClose={() => setShowAddUserModal(false)}
           onUserCreated={(newUser) => {
-            setUsersList((prev) => [newUser, ...prev]);
-            setStats((prev) => ({ ...prev, totalUsers: prev.totalUsers + 1 }));
+            fetchDashboardData();
           }}
         />
       )}
