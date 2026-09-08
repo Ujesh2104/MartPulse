@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   TrendingUp,
   Layers,
+  Sparkles,
 } from 'lucide-react';
 import AddStoreModal from '../components/Modals/AddStoreModal';
 import AddUserModal from '../components/Modals/AddUserModal';
@@ -149,44 +150,44 @@ export const AdminDashboard = () => {
   const storeOwnersList = usersList.filter((u) => u.role === 'STORE_OWNER');
 
   return (
-    <div className="min-h-screen bg-[#F4F5FA] py-6 sm:py-8 px-4 sm:px-6 lg:px-8 space-y-6">
+    <div className="min-h-screen bg-[#0A0B0E] text-white py-6 sm:py-8 px-4 sm:px-6 lg:px-8 space-y-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Header Card */}
         <AnimatedSection animation="fade-up">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <span className="px-3 py-1 rounded-full bg-[#5B4DFF]/10 text-[#5B4DFF] text-xs font-bold">
-                👑 System Administrator Console
+          <div className="bg-[#121318] rounded-3xl p-6 sm:p-8 border border-[#1E2028] shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 text-xs font-extrabold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" /> System Administrator Console
               </span>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-heading">
                 Platform Master Management
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500">
-                Welcome, <strong className="text-slate-800">{user?.name}</strong>! Oversee marts, ratings, and registered users.
+              <p className="text-xs sm:text-sm text-slate-400">
+                Welcome, <strong className="text-white">Admin</strong>! Oversee marts, verified ratings, and system users.
               </p>
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
               <button
                 onClick={() => setShowAddStoreModal(true)}
-                className="px-4 py-2.5 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white text-xs font-bold shadow-[0_4px_12px_rgba(91,77,255,0.25)] flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+                className="px-4 py-2.5 rounded-full bg-[#CCFF00] hover:bg-[#b8e600] text-black text-xs font-extrabold shadow-[0_0_15px_rgba(204,255,0,0.3)] flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
               >
                 <Plus className="w-4 h-4" />
-                <span>Add New Store</span>
+                <span>Add Store</span>
               </button>
               <button
                 onClick={() => setShowAddUserModal(true)}
-                className="px-4 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+                className="px-4 py-2.5 rounded-full bg-[#1A1C24] hover:bg-[#252834] text-white hover:text-[#CCFF00] text-xs font-bold border border-[#2A2C38] flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
               >
                 <Plus className="w-4 h-4" />
-                <span>Add New User</span>
+                <span>Add User</span>
               </button>
               <button
                 onClick={fetchDashboardData}
-                className="p-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors hover:scale-105"
+                className="p-2.5 rounded-full bg-[#1A1C24] hover:bg-[#252834] text-slate-400 hover:text-white border border-[#2A2C38] transition-colors hover:scale-105"
                 title="Refresh Data"
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#CCFF00]' : ''}`} />
               </button>
             </div>
           </div>
@@ -195,37 +196,37 @@ export const AdminDashboard = () => {
         {/* 3 Metrics Cards with Stagger Animation */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <AnimatedSection animation="fade-up" delay={100}>
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-2xl bg-[#5B4DFF]/10 text-[#5B4DFF] flex items-center justify-center font-bold">
+            <div className="bg-[#121318] rounded-3xl p-6 border border-[#1E2028] shadow-lg flex items-center gap-4 hover:border-[#CCFF00]/30 transition-all duration-300 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-2xl bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 flex items-center justify-center font-bold">
                 <Users className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Users</p>
-                <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalUsers}</h3>
+                <p className="text-xs font-extrabold uppercase tracking-wider text-slate-500">Total Users</p>
+                <h3 className="text-3xl font-extrabold text-white font-mono">{stats.totalUsers}</h3>
               </div>
             </div>
           </AnimatedSection>
 
           <AnimatedSection animation="fade-up" delay={200}>
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
+            <div className="bg-[#121318] rounded-3xl p-6 border border-[#1E2028] shadow-lg flex items-center gap-4 hover:border-[#CCFF00]/30 transition-all duration-300 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-2xl bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 flex items-center justify-center font-bold">
                 <Building2 className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Registered Stores</p>
-                <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalStores}</h3>
+                <p className="text-xs font-extrabold uppercase tracking-wider text-slate-500">Registered Stores</p>
+                <h3 className="text-3xl font-extrabold text-white font-mono">{stats.totalStores}</h3>
               </div>
             </div>
           </AnimatedSection>
 
           <AnimatedSection animation="fade-up" delay={300}>
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold">
-                <Star className="w-6 h-6 fill-amber-500" />
+            <div className="bg-[#121318] rounded-3xl p-6 border border-[#1E2028] shadow-lg flex items-center gap-4 hover:border-[#CCFF00]/30 transition-all duration-300 hover:-translate-y-1">
+              <div className="w-12 h-12 rounded-2xl bg-amber-400/10 text-amber-400 border border-amber-400/20 flex items-center justify-center font-bold">
+                <Star className="w-6 h-6 fill-amber-400" />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Ratings</p>
-                <h3 className="text-2xl font-extrabold text-slate-900">{stats.totalRatings}</h3>
+                <p className="text-xs font-extrabold uppercase tracking-wider text-slate-500">Total Ratings</p>
+                <h3 className="text-3xl font-extrabold text-white font-mono">{stats.totalRatings}</h3>
               </div>
             </div>
           </AnimatedSection>
@@ -235,10 +236,10 @@ export const AdminDashboard = () => {
         <AnimatedSection animation="fade-up" delay={150} className="flex items-center gap-2">
           <button
             onClick={() => setActiveTab('stores')}
-            className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-5 py-2.5 rounded-full text-xs font-extrabold transition-all flex items-center gap-2 ${
               activeTab === 'stores'
-                ? 'bg-[#5B4DFF] text-white shadow-[0_4px_12px_rgba(91,77,255,0.3)]'
-                : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+                ? 'bg-[#CCFF00] text-black shadow-[0_0_15px_rgba(204,255,0,0.3)] scale-105'
+                : 'bg-[#121318] text-slate-400 hover:text-white border border-[#1E2028]'
             }`}
           >
             <Building2 className="w-3.5 h-3.5" />
@@ -246,10 +247,10 @@ export const AdminDashboard = () => {
           </button>
           <button
             onClick={() => setActiveTab('users')}
-            className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-5 py-2.5 rounded-full text-xs font-extrabold transition-all flex items-center gap-2 ${
               activeTab === 'users'
-                ? 'bg-[#5B4DFF] text-white shadow-[0_4px_12px_rgba(91,77,255,0.3)]'
-                : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+                ? 'bg-[#CCFF00] text-black shadow-[0_0_15px_rgba(204,255,0,0.3)] scale-105'
+                : 'bg-[#121318] text-slate-400 hover:text-white border border-[#1E2028]'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -259,21 +260,21 @@ export const AdminDashboard = () => {
 
         {/* Tab 1: Stores Catalog */}
         {activeTab === 'stores' && (
-          <AnimatedSection animation="fade-up" delay={200} className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <AnimatedSection animation="fade-up" delay={200} className="bg-[#121318] rounded-3xl border border-[#1E2028] shadow-xl overflow-hidden">
             {/* Table Filter Bar */}
-            <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="p-4 sm:p-5 border-b border-[#1E2028] flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="relative w-full sm:w-80">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={storeSearch}
                   onChange={(e) => setStoreSearch(e.target.value)}
                   placeholder="Filter by store name, address..."
-                  className="w-full pl-9 pr-4 py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-slate-800 text-xs rounded-full border border-slate-200 outline-none transition-all placeholder:text-slate-400"
+                  className="w-full pl-9 pr-4 py-2 bg-[#181920] hover:bg-[#1E202A] focus:bg-[#181920] text-white text-xs rounded-full border border-[#282A36] focus:border-[#CCFF00] outline-none transition-all placeholder:text-slate-500"
                 />
               </div>
-              <span className="text-xs text-slate-400">
-                Showing <strong className="text-slate-700">{processedStores.length}</strong> of {stores.length} stores
+              <span className="text-xs text-slate-500">
+                Showing <strong className="text-[#CCFF00] font-mono">{processedStores.length}</strong> of {stores.length} stores
               </span>
             </div>
 
@@ -281,66 +282,66 @@ export const AdminDashboard = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/70 border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                  <tr className="bg-[#16171F] border-b border-[#1E2028] text-[11px] font-extrabold text-slate-400 uppercase tracking-wider font-heading">
                     <th
                       onClick={() => handleStoreSort('name')}
-                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#CCFF00]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Store Name</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-slate-500" />
                       </div>
                     </th>
                     <th
                       onClick={() => handleStoreSort('email')}
-                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#CCFF00]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Email</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-slate-500" />
                       </div>
                     </th>
                     <th
                       onClick={() => handleStoreSort('address')}
-                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#CCFF00]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Physical Address</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-slate-500" />
                       </div>
                     </th>
                     <th
                       onClick={() => handleStoreSort('rating')}
-                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#CCFF00]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Overall Rating</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-slate-500" />
                       </div>
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
+                <tbody className="divide-y divide-[#1E2028] text-xs text-slate-300">
                   {processedStores.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-slate-400 text-xs">
+                      <td colSpan={4} className="py-8 text-center text-slate-500 text-xs">
                         No stores found matching your query.
                       </td>
                     </tr>
                   ) : (
                     processedStores.map((s) => (
-                      <tr key={s.id} className="hover:bg-slate-50/70 transition-colors">
+                      <tr key={s.id} className="hover:bg-[#181920]/80 transition-colors">
                         <td className="py-4 px-5">
-                          <div className="font-bold text-slate-900">{s.name}</div>
-                          <div className="text-[11px] text-[#5B4DFF] font-medium">{s.category}</div>
+                          <div className="font-bold text-white font-heading">{s.name}</div>
+                          <div className="text-[11px] text-[#CCFF00] font-medium">{s.category}</div>
                         </td>
-                        <td className="py-4 px-5 text-slate-600">{s.email}</td>
-                        <td className="py-4 px-5 text-slate-500 max-w-xs truncate">{s.address}</td>
+                        <td className="py-4 px-5 text-slate-400">{s.email}</td>
+                        <td className="py-4 px-5 text-slate-400 max-w-xs truncate">{s.address}</td>
                         <td className="py-4 px-5">
-                          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-bold text-slate-800">
+                          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#181920] border border-[#2A2C38] text-xs font-bold text-white">
                             <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                            <span>{parseFloat(s.rating || 0).toFixed(1)}</span>
-                            <span className="text-[10px] text-slate-400">({s.ratingCount || 0})</span>
+                            <span className="font-mono">{parseFloat(s.rating || 0).toFixed(1)}</span>
+                            <span className="text-[10px] text-slate-500">({s.ratingCount || 0})</span>
                           </div>
                         </td>
                       </tr>
@@ -354,25 +355,25 @@ export const AdminDashboard = () => {
 
         {/* Tab 2: User Management */}
         {activeTab === 'users' && (
-          <AnimatedSection animation="fade-up" delay={200} className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <AnimatedSection animation="fade-up" delay={200} className="bg-[#121318] rounded-3xl border border-[#1E2028] shadow-xl overflow-hidden">
             {/* User Filter Controls */}
-            <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="p-4 sm:p-5 border-b border-[#1E2028] flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <div className="relative w-full sm:w-64">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={userSearch}
                     onChange={(e) => setUserSearch(e.target.value)}
                     placeholder="Search users..."
-                    className="w-full pl-9 pr-4 py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-slate-800 text-xs rounded-full border border-slate-200 outline-none transition-all placeholder:text-slate-400"
+                    className="w-full pl-9 pr-4 py-2 bg-[#181920] hover:bg-[#1E202A] focus:bg-[#181920] text-white text-xs rounded-full border border-[#282A36] focus:border-[#CCFF00] outline-none transition-all placeholder:text-slate-500"
                   />
                 </div>
 
                 <select
                   value={userRoleFilter}
                   onChange={(e) => setUserRoleFilter(e.target.value)}
-                  className="px-3 py-2 bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-full outline-none"
+                  className="px-3 py-2 bg-[#181920] border border-[#282A36] text-slate-300 text-xs rounded-full outline-none focus:border-[#CCFF00]"
                 >
                   <option value="">All Roles</option>
                   <option value="ADMIN">Admin</option>
@@ -381,8 +382,8 @@ export const AdminDashboard = () => {
                 </select>
               </div>
 
-              <span className="text-xs text-slate-400">
-                Showing <strong className="text-slate-700">{processedUsers.length}</strong> users
+              <span className="text-xs text-slate-500">
+                Showing <strong className="text-[#CCFF00] font-mono">{processedUsers.length}</strong> users
               </span>
             </div>
 
@@ -390,87 +391,87 @@ export const AdminDashboard = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/70 border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                  <tr className="bg-[#16171F] border-b border-[#1E2028] text-[11px] font-extrabold text-slate-400 uppercase tracking-wider font-heading">
                     <th
                       onClick={() => handleUserSort('name')}
-                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#CCFF00]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>User Name</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-slate-500" />
                       </div>
                     </th>
                     <th
                       onClick={() => handleUserSort('email')}
-                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#CCFF00]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Email Address</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-slate-500" />
                       </div>
                     </th>
                     <th
                       onClick={() => handleUserSort('address')}
-                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#CCFF00]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Address</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-slate-500" />
                       </div>
                     </th>
                     <th
                       onClick={() => handleUserSort('role')}
-                      className="py-3.5 px-5 cursor-pointer hover:text-[#5B4DFF]"
+                      className="py-3.5 px-5 cursor-pointer hover:text-[#CCFF00]"
                     >
                       <div className="flex items-center gap-1.5">
                         <span>Role / Store Rating</span>
-                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                        <ArrowUpDown className="w-3 h-3 text-slate-500" />
                       </div>
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
+                <tbody className="divide-y divide-[#1E2028] text-xs text-slate-300">
                   {processedUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-slate-400 text-xs">
+                      <td colSpan={4} className="py-8 text-center text-slate-500 text-xs">
                         No users found matching your filters.
                       </td>
                     </tr>
                   ) : (
                     processedUsers.map((u) => (
-                      <tr key={u.id} className="hover:bg-slate-50/70 transition-colors">
+                      <tr key={u.id} className="hover:bg-[#181920]/80 transition-colors">
                         <td className="py-4 px-5">
                           <div className="flex items-center gap-3">
-                            <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-xs">
+                            <div className="w-7 h-7 rounded-full bg-[#181920] border border-[#282A36] text-[#CCFF00] font-bold flex items-center justify-center text-xs">
                               {u.name?.charAt(0) || 'U'}
                             </div>
                             <div>
-                              <div className="font-bold text-slate-900">{u.name}</div>
-                              <div className="text-[10px] text-slate-400">ID: {u.id}</div>
+                              <div className="font-bold text-white font-heading">{u.name}</div>
+                              <div className="text-[10px] text-slate-500 font-mono">ID: {u.id}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-5 text-slate-600">{u.email}</td>
-                        <td className="py-4 px-5 text-slate-500 max-w-xs truncate">{u.address}</td>
+                        <td className="py-4 px-5 text-slate-400">{u.email}</td>
+                        <td className="py-4 px-5 text-slate-400 max-w-xs truncate">{u.address}</td>
                         <td className="py-4 px-5">
                           <div className="space-y-1">
                             <span
-                              className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                              className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
                                 u.role === 'ADMIN'
-                                  ? 'bg-[#5B4DFF]/10 text-[#5B4DFF]'
+                                  ? 'bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/30'
                                   : u.role === 'STORE_OWNER'
-                                  ? 'bg-amber-500/10 text-amber-600'
-                                  : 'bg-slate-100 text-slate-600'
+                                  ? 'bg-amber-400/10 text-amber-400 border border-amber-400/30'
+                                  : 'bg-[#181920] text-slate-300 border border-[#282A36]'
                               }`}
                             >
                               {u.role}
                             </span>
                             {u.role === 'STORE_OWNER' && u.storeRating !== undefined && (
-                              <div className="text-[11px] text-slate-600 font-semibold flex items-center gap-1">
+                              <div className="text-[11px] text-slate-300 font-semibold flex items-center gap-1">
                                 <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                                <span>{parseFloat(u.storeRating || 0).toFixed(1)}</span>
+                                <span className="font-mono">{parseFloat(u.storeRating || 0).toFixed(1)}</span>
                                 {u.storeName && (
-                                  <span className="text-slate-400 text-[10px] truncate max-w-[120px]">
+                                  <span className="text-slate-500 text-[10px] truncate max-w-[120px]">
                                     ({u.storeName})
                                   </span>
                                 )}

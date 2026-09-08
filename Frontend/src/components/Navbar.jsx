@@ -13,6 +13,7 @@ import {
   Heart,
   ShoppingBag,
   Sparkles,
+  SlidersHorizontal,
 } from 'lucide-react';
 import ChangePasswordModal from './Modals/ChangePasswordModal';
 import MartPulseLogo from './MartPulseLogo';
@@ -47,101 +48,138 @@ export const Navbar = () => {
     }
   };
 
+  // Determine dynamic display name and avatar initial
+  const getDisplayName = () => {
+    if (!user) return '';
+    if (user.role === 'ADMIN') return 'Admin';
+    if (user.role === 'STORE_OWNER') return user.name?.split(' ')[0] || 'Store Owner';
+    return user.name?.split(' ')[0] || 'Shopper';
+  };
+
+  const getAvatarInitial = () => {
+    if (!user) return 'U';
+    if (user.role === 'ADMIN') return 'A';
+    return user.name?.charAt(0)?.toUpperCase() || 'U';
+  };
+
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all">
+      <header className="sticky top-0 z-50 bg-[#0A0B0E]/90 backdrop-blur-xl border-b border-[#1C1D24] transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-18 py-3">
-            {/* Left: Modern Logo */}
-            <div className="flex items-center gap-8">
+            {/* Left: Brand Logo & Catalog Pill Button */}
+            <div className="flex items-center gap-6">
               <Link to="/" className="group flex items-center">
                 <MartPulseLogo size="md" />
               </Link>
 
-              {/* Global Search Pill matching reference UI */}
-              <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center">
-                <div className="relative w-72">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={navSearch}
-                    onChange={(e) => setNavSearch(e.target.value)}
-                    placeholder="Search marts, grocers..."
-                    className="w-full pl-9 pr-4 py-2 bg-slate-100/90 hover:bg-slate-100 focus:bg-white text-slate-800 text-xs rounded-full border border-transparent focus:border-[#5B4DFF]/40 focus:ring-2 focus:ring-[#5B4DFF]/10 outline-none transition-all placeholder:text-slate-400"
-                  />
-                </div>
-              </form>
+              {/* Catalog Pill Button matching Image 2 */}
+              <Link
+                to="/"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-[#14151B] hover:bg-[#1C1E26] border border-[#262833] text-xs font-semibold text-white transition-all hover:border-[#CCFF00]/40"
+              >
+                <Menu className="w-3.5 h-3.5 text-[#CCFF00]" />
+                <span>Catalog</span>
+              </Link>
             </div>
 
             {/* Middle Nav Links */}
-            <nav className="hidden md:flex items-center space-x-6">
+            <nav className="hidden lg:flex items-center space-x-8">
               <Link
                 to="/"
-                className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
+                className={`text-xs font-semibold tracking-wide transition-all relative py-1 ${
                   location.pathname === '/'
-                    ? 'text-[#5B4DFF] bg-[#5B4DFF]/10'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'text-[#CCFF00] font-bold'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                Explore Marts
+                Bestsellers
+                {location.pathname === '/' && (
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#CCFF00] rounded-full"></span>
+                )}
               </Link>
+
+              <Link
+                to="/#marts-catalog"
+                className="text-xs font-semibold text-zinc-400 hover:text-white tracking-wide transition-all"
+              >
+                Discover Stores
+              </Link>
+
               {isAuthenticated && (
                 <Link
                   to={getDashboardPath()}
-                  className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
+                  className={`text-xs font-semibold tracking-wide transition-all relative py-1 flex items-center gap-1.5 ${
                     location.pathname.includes('dashboard')
-                      ? 'text-[#5B4DFF] bg-[#5B4DFF]/10'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      ? 'text-[#CCFF00] font-bold'
+                      : 'text-zinc-400 hover:text-white'
                   }`}
                 >
-                  <LayoutDashboard className="w-3.5 h-3.5" />
-                  Dashboard
+                  <LayoutDashboard className="w-3.5 h-3.5 text-[#CCFF00]" />
+                  <span>Portal</span>
+                  {location.pathname.includes('dashboard') && (
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#CCFF00] rounded-full"></span>
+                  )}
                 </Link>
               )}
             </nav>
 
-            {/* Right Auth / Profile Controls */}
-            <div className="hidden md:flex items-center gap-3">
+            {/* Right: Search, Favorites, Auth / Profile Controls */}
+            <div className="flex items-center gap-3">
+              {/* Global Search Pill matching Image 2 */}
+              <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center">
+                <div className="relative w-56 lg:w-64">
+                  <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={navSearch}
+                    onChange={(e) => setNavSearch(e.target.value)}
+                    placeholder="Search marts & groceries..."
+                    className="w-full pl-9 pr-4 py-2 bg-[#121318] hover:bg-[#171820] focus:bg-[#171820] text-zinc-200 text-xs rounded-full border border-[#232530] focus:border-[#CCFF00]/50 focus:ring-1 focus:ring-[#CCFF00]/30 outline-none transition-all placeholder:text-zinc-500"
+                  />
+                </div>
+              </form>
+
               {!isAuthenticated ? (
-                <>
+                <div className="flex items-center gap-2">
                   <Link
                     to="/login"
-                    className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors"
+                    className="px-4 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-[#181920] rounded-full border border-[#262833] transition-colors"
                   >
                     Log In
                   </Link>
                   <Link
                     to="/register"
-                    className="px-5 py-2 text-xs font-bold text-white bg-[#5B4DFF] hover:bg-[#4B3BE6] rounded-full shadow-[0_4px_12px_rgba(91,77,255,0.25)] transition-all hover:shadow-[0_6px_16px_rgba(91,77,255,0.35)]"
+                    className="px-5 py-2 text-xs font-extrabold text-black bg-[#CCFF00] hover:bg-[#b8e600] rounded-full shadow-[0_0_20px_rgba(204,255,0,0.25)] transition-all hover:shadow-[0_0_28px_rgba(204,255,0,0.4)]"
                   >
-                    Register Free
+                    Register
                   </Link>
-                </>
+                </div>
               ) : (
                 <div className="relative flex items-center gap-2">
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-slate-800 transition-all"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#14151B] hover:bg-[#1C1E26] border border-[#262833] text-zinc-200 transition-all hover:border-[#CCFF00]/40"
                   >
-                    <div className="w-6 h-6 rounded-full bg-[#5B4DFF] text-white flex items-center justify-center font-bold text-[10px]">
-                      {user?.name?.charAt(0) || 'U'}
+                    <div className="w-6 h-6 rounded-full bg-[#CCFF00] text-black flex items-center justify-center font-extrabold text-[11px]">
+                      {getAvatarInitial()}
                     </div>
-                    <span className="text-xs font-semibold max-w-[120px] truncate">
-                      {user?.name?.split(' ')[0]}
+                    <span className="text-xs font-bold text-white max-w-[110px] truncate">
+                      {getDisplayName()}
                     </span>
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white text-[#5B4DFF] border border-slate-200">
+                    <span className="px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider rounded-full bg-[#20222C] text-[#CCFF00] border border-[#2D2F3C]">
                       {user?.role === 'ADMIN'
                         ? 'Admin'
                         : user?.role === 'STORE_OWNER'
                         ? 'Owner'
-                        : 'Shopper'}
+                        : 'User'}
                     </span>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    <ChevronDown className="w-3 h-3 text-zinc-400" />
                   </button>
 
                   <button
                     onClick={handleLogout}
-                    className="p-2 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 transition-all"
+                    className="p-2 rounded-full text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 border border-[#262833] transition-all"
                     title="Sign Out"
                   >
                     <LogOut className="w-3.5 h-3.5" />
@@ -149,16 +187,16 @@ export const Navbar = () => {
 
                   {/* Profile Dropdown */}
                   {dropdownOpen && (
-                    <div className="absolute right-0 top-11 mt-1 w-60 rounded-2xl bg-white border border-slate-200 shadow-xl py-2 z-50 animate-fade-in">
-                      <div className="px-4 py-2.5 border-b border-slate-100">
-                        <p className="text-[11px] text-slate-400">Signed in as</p>
-                        <p className="text-xs font-bold text-slate-900 truncate">{user?.email}</p>
-                        <p className="text-[10px] font-semibold text-[#5B4DFF] mt-0.5">
+                    <div className="absolute right-0 top-11 mt-1 w-64 rounded-2xl bg-[#14151B] border border-[#262833] shadow-[0_16px_40px_rgba(0,0,0,0.8)] py-2 z-50 animate-scale-in">
+                      <div className="px-4 py-3 border-b border-[#20222C]">
+                        <p className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Signed In As</p>
+                        <p className="text-xs font-bold text-white truncate mt-0.5">{user?.email}</p>
+                        <p className="text-[10px] font-bold text-[#CCFF00] mt-1">
                           {user?.role === 'ADMIN'
-                            ? 'System Administrator'
+                            ? '👑 System Administrator'
                             : user?.role === 'STORE_OWNER'
-                            ? 'Verified Store Owner'
-                            : 'Verified Shopper'}
+                            ? '🛒 Verified Store Owner'
+                            : '🛍️ Registered Shopper'}
                         </p>
                       </div>
 
@@ -166,27 +204,27 @@ export const Navbar = () => {
                         <Link
                           to={getDashboardPath()}
                           onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#5B4DFF] transition-colors"
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-zinc-300 hover:bg-[#1C1E26] hover:text-[#CCFF00] transition-colors"
                         >
-                          <LayoutDashboard className="w-3.5 h-3.5" />
-                          Role Dashboard
+                          <LayoutDashboard className="w-3.5 h-3.5 text-[#CCFF00]" />
+                          Role Management Portal
                         </Link>
                         <button
                           onClick={() => {
                             setDropdownOpen(false);
                             setShowPasswordModal(true);
                           }}
-                          className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#5B4DFF] transition-colors"
+                          className="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-zinc-300 hover:bg-[#1C1E26] hover:text-[#CCFF00] transition-colors"
                         >
-                          <KeyRound className="w-3.5 h-3.5" />
+                          <KeyRound className="w-3.5 h-3.5 text-[#CCFF00]" />
                           Change Password
                         </button>
                       </div>
 
-                      <div className="border-t border-slate-100 pt-1">
+                      <div className="border-t border-[#20222C] pt-1">
                         <button
                           onClick={handleLogout}
-                          className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
+                          className="w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition-colors"
                         >
                           <LogOut className="w-3.5 h-3.5" />
                           Sign Out
@@ -196,51 +234,51 @@ export const Navbar = () => {
                   )}
                 </div>
               )}
-            </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-xl text-slate-700 hover:bg-slate-100"
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
+              {/* Mobile Menu Button */}
+              <div className="lg:hidden flex items-center">
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="p-2 rounded-xl text-zinc-300 hover:bg-[#1C1E26] border border-[#262833]"
+                >
+                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-3">
+          <div className="lg:hidden border-t border-[#1C1D24] bg-[#0E0F14] px-4 pt-3 pb-5 space-y-3">
             <form onSubmit={handleSearchSubmit}>
               <input
                 type="text"
                 value={navSearch}
                 onChange={(e) => setNavSearch(e.target.value)}
                 placeholder="Search marts, grocers..."
-                className="w-full px-4 py-2 bg-slate-100 text-slate-800 text-xs rounded-full border border-slate-200 outline-none"
+                className="w-full px-4 py-2 bg-[#171820] text-zinc-200 text-xs rounded-full border border-[#262833] outline-none"
               />
             </form>
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-xs font-semibold text-slate-700 py-1"
+              className="block text-xs font-semibold text-zinc-300 py-1 hover:text-[#CCFF00]"
             >
-              Explore Marts
+              Bestsellers & Catalog
             </Link>
             {isAuthenticated ? (
               <>
                 <Link
                   to={getDashboardPath()}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block text-xs font-semibold text-[#5B4DFF] py-1"
+                  className="block text-xs font-semibold text-[#CCFF00] py-1"
                 >
-                  Dashboard ({user?.role})
+                  Portal Dashboard ({getDisplayName()})
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="block text-xs font-semibold text-rose-600 py-1"
+                  className="block text-xs font-semibold text-rose-400 py-1"
                 >
                   Sign Out
                 </button>
@@ -250,14 +288,14 @@ export const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 text-center py-2 text-xs font-semibold border border-slate-200 rounded-full"
+                  className="flex-1 text-center py-2 text-xs font-semibold border border-[#262833] rounded-full text-zinc-300"
                 >
                   Log In
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 text-center py-2 text-xs font-bold text-white bg-[#5B4DFF] rounded-full"
+                  className="flex-1 text-center py-2 text-xs font-bold text-black bg-[#CCFF00] rounded-full"
                 >
                   Register
                 </Link>
@@ -279,3 +317,4 @@ export const Navbar = () => {
 };
 
 export default Navbar;
+

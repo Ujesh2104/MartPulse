@@ -65,36 +65,36 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[#F4F5FA] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Ambient background soft glow with floating animation */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#5B4DFF]/10 rounded-full blur-[100px] pointer-events-none animate-pulse-subtle"></div>
-      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none animate-float"></div>
+    <div className="min-h-[calc(100vh-80px)] bg-[#0A0B0E] text-slate-100 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Ambient background glow */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#CCFF00]/5 rounded-full blur-[120px] pointer-events-none animate-pulse-subtle"></div>
+      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none"></div>
 
       <AnimatedSection animation="fade-down" className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-2 relative z-10">
-        <div className="flex justify-center mb-2 animate-float">
+        <div className="flex justify-center mb-2">
           <MartPulseLogo size="lg" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Welcome back
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-tech">
+          Welcome Back
         </h2>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-zinc-400">
           Sign in to access your role dashboard and community ratings
         </p>
       </AnimatedSection>
 
       <AnimatedSection animation="scale" delay={150} className="mt-6 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div className="bg-white py-8 px-6 sm:px-10 rounded-3xl border border-slate-200/80 shadow-lg space-y-6 hover:shadow-xl transition-shadow">
+        <div className="bg-[#121318] py-8 px-6 sm:px-10 rounded-3xl border border-[#20222A] shadow-[0_16px_40px_rgba(0,0,0,0.8)] space-y-6">
           {(formError || authError) && (
-            <div className="p-3.5 rounded-2xl bg-rose-50 text-rose-800 border border-rose-200 text-xs flex items-center gap-2 animate-fade-in">
-              <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-rose-500/10 text-rose-300 border border-rose-500/30 text-xs flex items-center gap-2 animate-fade-in">
+              <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
               <span>{formError || authError}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1.5 flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-slate-400" />
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-zinc-500" />
                 Email Address
               </label>
               <input
@@ -103,14 +103,14 @@ export const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:border-[#5B4DFF]/50 focus:ring-2 focus:ring-[#5B4DFF]/10 text-xs text-slate-800 outline-none transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#0C0D11] border border-[#232530] focus:border-[#CCFF00]/50 text-xs text-zinc-100 outline-none transition-all placeholder:text-zinc-600"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-slate-400" />
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-zinc-500" />
                   Password
                 </label>
               </div>
@@ -121,12 +121,12 @@ export const LoginPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 focus:border-[#5B4DFF]/50 focus:ring-2 focus:ring-[#5B4DFF]/10 text-xs text-slate-800 outline-none transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#0C0D11] border border-[#232530] focus:border-[#CCFF00]/50 text-xs text-zinc-100 outline-none transition-all placeholder:text-zinc-600"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -136,7 +136,7 @@ export const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white font-bold text-xs shadow-[0_4px_12px_rgba(91,77,255,0.25)] hover:shadow-[0_6px_16px_rgba(91,77,255,0.35)] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50 hover:-translate-y-0.5 active:translate-y-0"
+              className="w-full py-3 rounded-full bg-[#CCFF00] hover:bg-[#b8e600] text-black font-extrabold text-xs shadow-[0_0_20px_rgba(204,255,0,0.3)] hover:shadow-[0_0_28px_rgba(204,255,0,0.45)] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50 hover:-translate-y-0.5 active:translate-y-0"
             >
               {loading ? (
                 <span>Authenticating...</span>
@@ -150,58 +150,58 @@ export const LoginPage = () => {
           </form>
 
           {/* Quick Demo Autofill Pills */}
-          <div className="pt-4 border-t border-slate-100 space-y-2.5">
-            <p className="text-center text-[10px] uppercase tracking-wider font-extrabold text-slate-400">
+          <div className="pt-4 border-t border-[#1F2029] space-y-2.5">
+            <p className="text-center text-[10px] uppercase tracking-wider font-extrabold text-zinc-500">
               ⚡ Quick Autofill Demo Profiles
             </p>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => handleQuickFill('admin@martpulse.com', 'Admin@12345', 'ADMIN')}
-                className={`p-2.5 rounded-2xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border hover:scale-105 active:scale-95 ${
+                className={`p-2.5 rounded-xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border hover:scale-105 active:scale-95 ${
                   selectedRole === 'ADMIN'
-                    ? 'bg-[#5B4DFF]/10 text-[#5B4DFF] border-[#5B4DFF] shadow-xs'
-                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    ? 'bg-[#1C1E26] text-[#CCFF00] border-[#CCFF00] shadow-[0_0_12px_rgba(204,255,0,0.2)]'
+                    : 'bg-[#14151B] text-zinc-300 border-[#262833] hover:bg-[#1A1B22]'
                 }`}
                 title="Autofill Administrator"
               >
-                <ShieldCheck className="w-4 h-4 text-[#5B4DFF]" />
+                <ShieldCheck className="w-4 h-4 text-[#CCFF00]" />
                 <span>Admin</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleQuickFill('owner@martpulse.com', 'Owner@12345', 'STORE_OWNER')}
-                className={`p-2.5 rounded-2xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border hover:scale-105 active:scale-95 ${
+                className={`p-2.5 rounded-xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border hover:scale-105 active:scale-95 ${
                   selectedRole === 'STORE_OWNER'
-                    ? 'bg-[#5B4DFF]/10 text-[#5B4DFF] border-[#5B4DFF] shadow-xs'
-                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    ? 'bg-[#1C1E26] text-[#CCFF00] border-[#CCFF00] shadow-[0_0_12px_rgba(204,255,0,0.2)]'
+                    : 'bg-[#14151B] text-zinc-300 border-[#262833] hover:bg-[#1A1B22]'
                 }`}
                 title="Autofill Store Owner"
               >
-                <UserCheck className="w-4 h-4 text-[#5B4DFF]" />
+                <UserCheck className="w-4 h-4 text-[#CCFF00]" />
                 <span>Store Owner</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleQuickFill('user@martpulse.com', 'User@12345', 'NORMAL_USER')}
-                className={`p-2.5 rounded-2xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border hover:scale-105 active:scale-95 ${
+                className={`p-2.5 rounded-xl text-[11px] font-bold transition-all flex flex-col items-center gap-1 border hover:scale-105 active:scale-95 ${
                   selectedRole === 'NORMAL_USER'
-                    ? 'bg-[#5B4DFF]/10 text-[#5B4DFF] border-[#5B4DFF] shadow-xs'
-                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    ? 'bg-[#1C1E26] text-[#CCFF00] border-[#CCFF00] shadow-[0_0_12px_rgba(204,255,0,0.2)]'
+                    : 'bg-[#14151B] text-zinc-300 border-[#262833] hover:bg-[#1A1B22]'
                 }`}
                 title="Autofill Normal User"
               >
-                <Sparkles className="w-4 h-4 text-[#5B4DFF]" />
+                <Sparkles className="w-4 h-4 text-[#CCFF00]" />
                 <span>Shopper</span>
               </button>
             </div>
           </div>
 
-          <div className="text-center text-xs text-slate-500 pt-1">
+          <div className="text-center text-xs text-zinc-400 pt-1">
             Don't have an account yet?{' '}
-            <Link to="/register" className="text-[#5B4DFF] font-bold hover:underline">
+            <Link to="/register" className="text-[#CCFF00] font-bold hover:underline">
               Create an account
             </Link>
           </div>
@@ -212,3 +212,4 @@ export const LoginPage = () => {
 };
 
 export default LoginPage;
+

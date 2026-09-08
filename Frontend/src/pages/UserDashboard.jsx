@@ -11,6 +11,7 @@ import {
   Heart,
   CheckCircle2,
   RefreshCw,
+  Award,
 } from 'lucide-react';
 import RateStoreModal from '../components/Modals/RateStoreModal';
 import AnimatedSection from '../components/AnimatedSection';
@@ -23,7 +24,6 @@ export const UserDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [minRatingFilter, setMinRatingFilter] = useState(0);
   const [sortBy, setSortBy] = useState('rating_desc');
-  const [userRatings, setUserRatings] = useState({});
   const [favorites, setFavorites] = useState({});
 
   // Rate Modal State
@@ -77,29 +77,29 @@ export const UserDashboard = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#F4F5FA] py-6 sm:py-8 px-4 sm:px-6 lg:px-8 space-y-6">
+    <div className="min-h-screen bg-[#0A0B0E] text-white py-6 sm:py-8 px-4 sm:px-6 lg:px-8 space-y-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Header Card */}
         <AnimatedSection animation="fade-up">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <span className="px-3 py-1 rounded-full bg-[#5B4DFF]/10 text-[#5B4DFF] text-xs font-bold">
-                🛍️ Shopper Community Hub
+          <div className="bg-[#121318] rounded-3xl p-6 sm:p-8 border border-[#1E2028] shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 text-xs font-extrabold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" /> Shopper Community Hub
               </span>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-heading">
                 Explore & Rate Grocery Marts
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500">
-                Welcome back, <strong className="text-slate-800">{user?.name}</strong>! Discover top-rated marts and share your feedback.
+              <p className="text-xs sm:text-sm text-slate-400">
+                Welcome back, <strong className="text-white">{user?.name}</strong>! Discover certified premium marts and submit verified reviews.
               </p>
             </div>
 
             <button
               onClick={fetchStoresData}
-              className="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200/70 text-slate-600 transition-colors flex items-center gap-2 text-xs font-bold hover:scale-105"
+              className="px-4 py-2.5 rounded-2xl bg-[#1A1C24] hover:bg-[#252834] text-slate-300 hover:text-[#CCFF00] border border-[#2A2C38] transition-all flex items-center gap-2 text-xs font-bold hover:scale-105 active:scale-95"
               title="Refresh Mart List"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#CCFF00]' : ''}`} />
               <span>Refresh</span>
             </button>
           </div>
@@ -111,13 +111,13 @@ export const UserDashboard = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-semibold transition-all ${
+              className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all ${
                 selectedCategory === cat
-                  ? 'bg-[#5B4DFF] text-white shadow-[0_4px_14px_rgba(91,77,255,0.3)]'
-                  : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200/80 shadow-xs'
+                  ? 'bg-[#CCFF00] text-black shadow-[0_0_20px_rgba(204,255,0,0.3)] font-extrabold scale-105'
+                  : 'bg-[#121318] text-slate-400 hover:text-white hover:bg-[#1A1C24] border border-[#1E2028]'
               }`}
             >
-              {cat === 'All' ? 'All Categories' : cat}
+              {cat === 'All' ? 'All Marts' : cat}
             </button>
           ))}
         </AnimatedSection>
@@ -127,8 +127,8 @@ export const UserDashboard = () => {
           {/* Left Filter Sidebar */}
           <AnimatedSection animation="fade-up" delay={150} className="lg:col-span-1 space-y-5">
             {/* Search Box */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-800">
+            <div className="bg-[#121318] p-5 rounded-3xl border border-[#1E2028] space-y-3 shadow-lg">
+              <label className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
                 Search Marts
               </label>
               <form onSubmit={handleSearchSubmit} className="relative">
@@ -137,22 +137,22 @@ export const UserDashboard = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Store name, address..."
-                  className="w-full pl-9 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-slate-800 text-xs rounded-2xl border border-slate-200 focus:border-[#5B4DFF]/40 focus:ring-2 focus:ring-[#5B4DFF]/10 outline-none transition-all placeholder:text-slate-400"
+                  className="w-full pl-9 pr-4 py-2.5 bg-[#181920] hover:bg-[#1E202A] focus:bg-[#181920] text-white text-xs rounded-2xl border border-[#282A36] focus:border-[#CCFF00] focus:ring-1 focus:ring-[#CCFF00]/30 outline-none transition-all placeholder:text-slate-500"
                 />
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
               </form>
             </div>
 
             {/* Star Rating Filter */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
+            <div className="bg-[#121318] p-5 rounded-3xl border border-[#1E2028] space-y-3 shadow-lg">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
                   Star Rating
                 </span>
                 {minRatingFilter > 0 && (
                   <button
                     onClick={() => setMinRatingFilter(0)}
-                    className="text-[11px] font-semibold text-[#5B4DFF] hover:underline"
+                    className="text-[11px] font-bold text-[#CCFF00] hover:underline"
                   >
                     Reset
                   </button>
@@ -164,10 +164,10 @@ export const UserDashboard = () => {
                   <button
                     key={stars}
                     onClick={() => setMinRatingFilter(minRatingFilter === stars ? 0 : stars)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                       minRatingFilter === stars
-                        ? 'bg-[#5B4DFF]/10 text-[#5B4DFF] font-bold'
-                        : 'text-slate-600 hover:bg-slate-50'
+                        ? 'bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/30 font-bold'
+                        : 'text-slate-400 hover:text-white hover:bg-[#181920]'
                     }`}
                   >
                     <div className="flex items-center gap-1.5">
@@ -176,18 +176,18 @@ export const UserDashboard = () => {
                           <Star
                             key={i}
                             className={`w-3.5 h-3.5 ${
-                              i < stars ? 'fill-amber-400 text-amber-400' : 'text-slate-200'
+                              i < stars ? 'fill-amber-400 text-amber-400' : 'text-slate-700'
                             }`}
                           />
                         ))}
                       </div>
-                      <span className="text-slate-500 font-semibold">{stars} Stars & up</span>
+                      <span className="text-slate-300 font-medium">{stars} Stars & up</span>
                     </div>
                     <div
-                      className={`w-4 h-4 rounded-md border flex items-center justify-center ${
+                      className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors ${
                         minRatingFilter === stars
-                          ? 'bg-[#5B4DFF] border-[#5B4DFF] text-white'
-                          : 'border-slate-300'
+                          ? 'bg-[#CCFF00] border-[#CCFF00] text-black font-extrabold'
+                          : 'border-slate-600 bg-transparent'
                       }`}
                     >
                       {minRatingFilter === stars && <span className="text-[10px]">✓</span>}
@@ -198,8 +198,8 @@ export const UserDashboard = () => {
             </div>
 
             {/* Sort Options */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
+            <div className="bg-[#121318] p-5 rounded-3xl border border-[#1E2028] space-y-3 shadow-lg">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
                 Sort Marts
               </span>
               <div className="space-y-1">
@@ -212,10 +212,10 @@ export const UserDashboard = () => {
                   <button
                     key={s.val}
                     onClick={() => setSortBy(s.val)}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                       sortBy === s.val
-                        ? 'bg-[#5B4DFF] text-white font-bold'
-                        : 'text-slate-600 hover:bg-slate-50'
+                        ? 'bg-[#CCFF00] text-black font-extrabold'
+                        : 'text-slate-400 hover:text-white hover:bg-[#181920]'
                     }`}
                   >
                     {s.label}
@@ -228,8 +228,8 @@ export const UserDashboard = () => {
           {/* Right Store Card Grid */}
           <div className="lg:col-span-3 space-y-4">
             <div className="flex items-center justify-between px-1">
-              <h2 className="text-sm font-bold text-slate-800">
-                Displaying <span className="text-[#5B4DFF]">{filteredStores.length}</span> Marts
+              <h2 className="text-sm font-extrabold text-slate-300">
+                Displaying <span className="text-[#CCFF00] font-mono">{filteredStores.length}</span> Marts
               </h2>
             </div>
 
@@ -238,19 +238,19 @@ export const UserDashboard = () => {
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div
                     key={i}
-                    className="bg-white h-72 rounded-3xl border border-slate-200/80 animate-pulse p-5 space-y-4"
+                    className="bg-[#121318] h-72 rounded-3xl border border-[#1E2028] animate-pulse p-5 space-y-4"
                   >
-                    <div className="w-16 h-5 bg-slate-200 rounded-full"></div>
-                    <div className="w-full h-28 bg-slate-100 rounded-2xl"></div>
-                    <div className="w-3/4 h-4 bg-slate-200 rounded-md"></div>
+                    <div className="w-16 h-5 bg-[#1E2028] rounded-full"></div>
+                    <div className="w-full h-28 bg-[#181920] rounded-2xl"></div>
+                    <div className="w-3/4 h-4 bg-[#1E2028] rounded-md"></div>
                   </div>
                 ))}
               </div>
             ) : filteredStores.length === 0 ? (
-              <AnimatedSection animation="scale" className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center space-y-3">
-                <Building2 className="w-12 h-12 text-slate-300 mx-auto" />
-                <h3 className="text-base font-bold text-slate-800">No stores found</h3>
-                <p className="text-xs text-slate-500">Try adjusting your filters or search terms.</p>
+              <AnimatedSection animation="scale" className="bg-[#121318] rounded-3xl border border-[#1E2028] p-12 text-center space-y-3">
+                <Building2 className="w-12 h-12 text-slate-600 mx-auto" />
+                <h3 className="text-base font-bold text-white">No stores found</h3>
+                <p className="text-xs text-slate-400">Try adjusting your filters or search terms.</p>
               </AnimatedSection>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -261,67 +261,67 @@ export const UserDashboard = () => {
                     delay={(index % 3) * 100}
                     className="h-full"
                   >
-                    <div className="group bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative hover:-translate-y-1.5 h-full">
-                      {/* Top Row: Category + Heart */}
+                    <div className="group bg-[#121318] rounded-3xl border border-[#1E2028] hover:border-[#CCFF00]/40 p-5 shadow-lg hover:shadow-[0_0_30px_rgba(204,255,0,0.12)] transition-all duration-300 flex flex-col justify-between relative hover:-translate-y-1.5 h-full">
+                      {/* Top Row: Category badge + Heart */}
                       <div className="flex items-center justify-between mb-3">
-                        <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#5B4DFF]/10 text-[#5B4DFF]">
-                          {store.category || 'Supermarket'}
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#CCFF00] text-black shadow-xs">
+                          {store.category?.split(' ')[0] || 'Supermarket'}
                         </span>
                         <button
                           onClick={() => toggleFavorite(store.id)}
                           className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border ${
                             favorites[store.id]
-                              ? 'bg-rose-50 border-rose-200 text-rose-500'
-                              : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500'
+                              ? 'bg-rose-500/20 border-rose-500/40 text-rose-400'
+                              : 'bg-[#181920] border-[#2A2C38] text-slate-500 hover:text-rose-400 hover:border-rose-500/30'
                           }`}
                         >
                           <Heart
-                            className={`w-4 h-4 ${favorites[store.id] ? 'fill-rose-500' : ''}`}
+                            className={`w-4 h-4 ${favorites[store.id] ? 'fill-rose-500 text-rose-500' : ''}`}
                           />
                         </button>
                       </div>
 
                       {/* Middle Graphic / Visual */}
-                      <div className="relative rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-4 mb-4 flex items-center justify-center h-32 border border-slate-100 overflow-hidden">
-                        <Building2 className="w-12 h-12 text-[#5B4DFF]/40 group-hover:scale-110 group-hover:text-[#5B4DFF] transition-all duration-300" />
+                      <div className="relative rounded-2xl bg-[#0D0E12] p-4 mb-4 flex items-center justify-center h-32 border border-[#1E2028] overflow-hidden group-hover:border-[#CCFF00]/20 transition-colors">
+                        <Building2 className="w-12 h-12 text-slate-600 group-hover:scale-110 group-hover:text-[#CCFF00] transition-all duration-300" />
                         
-                        {/* Overall Average Rating Score */}
-                        <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-white shadow-sm border border-slate-200/80 text-xs font-extrabold text-slate-800">
+                        {/* Rating Score */}
+                        <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#181920] border border-[#2A2C38] text-xs font-extrabold text-white">
                           <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                          <span>{parseFloat(store.rating || 0).toFixed(1)}</span>
+                          <span className="font-mono">{parseFloat(store.rating || 0).toFixed(1)}</span>
                         </div>
                       </div>
 
                       {/* Store Title & Address */}
                       <div className="space-y-1.5 mb-4 flex-grow">
-                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#5B4DFF] transition-colors line-clamp-1">
+                        <h3 className="text-sm font-bold text-white group-hover:text-[#CCFF00] transition-colors line-clamp-1 font-heading">
                           {store.name}
                         </h3>
-                        <p className="text-xs text-slate-500 flex items-start gap-1 line-clamp-2">
-                          <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-slate-400 flex items-start gap-1 line-clamp-2">
+                          <MapPin className="w-3.5 h-3.5 text-slate-500 flex-shrink-0 mt-0.5" />
                           <span>{store.address}</span>
                         </p>
                       </div>
 
                       {/* Bottom Action Pill Button */}
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                        <div className="text-[11px] text-slate-500 font-semibold">
+                      <div className="pt-3 border-t border-[#1E2028] flex items-center justify-between gap-2">
+                        <div className="text-[11px] text-slate-400 font-semibold">
                           {store.userRating ? (
-                            <span className="text-emerald-600 flex items-center gap-1">
+                            <span className="text-[#CCFF00] flex items-center gap-1 font-bold">
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               Your: {store.userRating}★
                             </span>
                           ) : (
-                            <span>{store.ratingCount || 0} ratings</span>
+                            <span className="text-slate-500">{store.ratingCount || 0} reviews</span>
                           )}
                         </div>
 
                         <button
                           onClick={() => setSelectedStoreForRating(store)}
-                          className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${
+                          className={`px-4 py-2 rounded-full text-xs font-extrabold transition-all flex items-center gap-1.5 ${
                             store.userRating
-                              ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300'
-                              : 'bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white shadow-[0_4px_10px_rgba(91,77,255,0.25)]'
+                              ? 'bg-[#181920] hover:bg-[#252834] text-[#CCFF00] border border-[#CCFF00]/40 shadow-xs'
+                              : 'bg-[#CCFF00] hover:bg-[#b8e600] text-black shadow-[0_0_15px_rgba(204,255,0,0.3)] hover:scale-105'
                           }`}
                         >
                           <Star className="w-3.5 h-3.5 fill-current" />
