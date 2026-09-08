@@ -22,3 +22,9 @@ yarn-error.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# Database files
+*.sqlite
+martpulse.sqlite
+Backend/martpulse.sqlite
+
