@@ -50,6 +50,43 @@ export const LandingPage = () => {
   // Rating Modal
   const [ratingStore, setRatingStore] = useState(null);
 
+  // Natural Human Slogans for Typewriter Animation
+  const slogans = [
+    "Fresh Groceries. Real Ratings. Trusted Marts.",
+    "Find Top Supermarkets & Organic Grocers Near You.",
+    "Real Shoppers, Honest Reviews — No Sponsored Fluff.",
+    "Shop Fresh. Save Time. Rate Your Favorite Stores.",
+  ];
+  const [sloganIndex, setSloganIndex] = useState(0);
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentSlogan = slogans[sloganIndex];
+    let typingSpeed = isDeleting ? 30 : 60;
+
+    if (!isDeleting && displayText === currentSlogan) {
+      const pauseTimeout = setTimeout(() => setIsDeleting(true), 2500);
+      return () => clearTimeout(pauseTimeout);
+    }
+
+    if (isDeleting && displayText === '') {
+      setIsDeleting(false);
+      setSloganIndex((prev) => (prev + 1) % slogans.length);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setDisplayText((prev) =>
+        isDeleting
+          ? currentSlogan.substring(0, prev.length - 1)
+          : currentSlogan.substring(0, prev.length + 1)
+      );
+    }, typingSpeed);
+
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, sloganIndex]);
+
   const navCategories = [
     'All items',
     'Luxury Supermarket',
@@ -153,23 +190,36 @@ export const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0B0E] text-slate-100 space-y-8 pb-20 selection:bg-[#CCFF00] selection:text-black">
-      {/* 1. TOP BREADCRUMB & TECH HEADER SECTION (MATCHING IMAGE 2) */}
+    <div className="min-h-screen bg-[#0A0B0E] text-slate-100 space-y-6 pb-20 selection:bg-[#CCFF00] selection:text-black">
+      {/* 1. HERO & SLOGAN BANNER WITH ATTRACTIVE TYPING ANIMATION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <div className="space-y-4">
-          {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium">
-            <Link to="/" className="hover:text-zinc-300 transition-colors">Home</Link>
-            <span>·</span>
-            <span className="text-zinc-300">Bestsellers & Verified Marts</span>
+          {/* Breadcrumb & Live Status Pill */}
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 text-zinc-500 font-medium">
+              <Link to="/" className="hover:text-zinc-300 transition-colors">Home</Link>
+              <span>·</span>
+              <span className="text-zinc-300">Bestsellers & Local Marts</span>
+            </div>
+
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#121318] border border-[#1E2028] text-[11px] font-semibold text-zinc-300">
+              <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-ping" />
+              <span>Real Shopper Ratings Active</span>
+            </div>
           </div>
 
-          {/* Large Headline & Category Row */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-2 border-b border-[#1A1B22]">
-            <div>
+          {/* Large Headline with Animated Typing Slogan */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-4 border-b border-[#1A1B22]">
+            <div className="space-y-2">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight font-tech">
                 Bestsellers
               </h1>
+
+              {/* Typing Slogan Line */}
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-zinc-400 h-6">
+                <span className="text-white font-semibold">{displayText}</span>
+                <span className="w-1.5 h-4 bg-[#CCFF00] inline-block animate-pulse" />
+              </div>
             </div>
 
             {/* Category Nav Tabs Matching Image 2 */}
@@ -217,7 +267,7 @@ export const LandingPage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
-          {/* LEFT SIDEBAR FILTERS MATRIX */}
+          {/* LEFT SIDEBAR FILTERS */}
           <aside className="lg:col-span-1 space-y-6">
             {/* Active Filter Chips & Reset */}
             <div className="space-y-3">
@@ -261,7 +311,7 @@ export const LandingPage = () => {
             </div>
 
             {/* Filter Search Input */}
-            <div className="bg-[#121318] p-4 rounded-2xl border border-[#1F2029] space-y-3">
+            <div className="bg-[#121318] p-4 rounded-2xl border border-[#1F2029] space-y-3 shadow-lg">
               <label className="text-[11px] font-extrabold uppercase tracking-wider text-zinc-400">
                 Search Marts
               </label>
@@ -278,7 +328,7 @@ export const LandingPage = () => {
             </div>
 
             {/* Category / Type Filter Accordion */}
-            <div className="bg-[#121318] p-4 rounded-2xl border border-[#1F2029] space-y-3">
+            <div className="bg-[#121318] p-4 rounded-2xl border border-[#1F2029] space-y-3 shadow-lg">
               <button
                 onClick={() => setCategoryOpen(!categoryOpen)}
                 className="w-full flex items-center justify-between text-xs font-bold text-white uppercase tracking-wider"
@@ -289,7 +339,6 @@ export const LandingPage = () => {
 
               {categoryOpen && (
                 <div className="space-y-2.5 pt-1">
-                  {/* Category search inside filter */}
                   <div className="relative">
                     <input
                       type="text"
@@ -331,7 +380,7 @@ export const LandingPage = () => {
             </div>
 
             {/* Star Rating Accordion */}
-            <div className="bg-[#121318] p-4 rounded-2xl border border-[#1F2029] space-y-3">
+            <div className="bg-[#121318] p-4 rounded-2xl border border-[#1F2029] space-y-3 shadow-lg">
               <button
                 onClick={() => setRatingOpen(!ratingOpen)}
                 className="w-full flex items-center justify-between text-xs font-bold text-white uppercase tracking-wider"
@@ -384,7 +433,7 @@ export const LandingPage = () => {
             </div>
           </aside>
 
-          {/* RIGHT PRODUCT / STORE CARDS GRID (MATCHING IMAGE 2 EXACT TILE STYLE) */}
+          {/* RIGHT STORE CARDS GRID */}
           <main className="lg:col-span-3 space-y-6">
             <div className="flex items-center justify-between px-1">
               <p className="text-xs text-zinc-400 font-medium">
@@ -455,7 +504,7 @@ export const LandingPage = () => {
                           </button>
                         </div>
 
-                        {/* Graphic Product Visual Container (Matching Protech Card Image Frame) */}
+                        {/* Graphic Product Visual Container */}
                         <div className="relative rounded-xl bg-[#0B0C0E] border border-[#1D1E26] p-6 mb-4 flex items-center justify-center h-36 overflow-hidden group-hover:border-[#CCFF00]/20 transition-all">
                           <div className="absolute inset-0 bg-gradient-to-br from-[#CCFF00]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                           {getStoreVectorIcon(store.category)}
@@ -505,7 +554,7 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* 3. CALL TO ACTION SECTION IN SLEEK DARK STYLING */}
+      {/* 3. CALL TO ACTION SECTION WITH NATURAL HUMAN SLOGAN */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <AnimatedSection animation="scale">
           <div className="bg-[#121318] rounded-3xl p-8 sm:p-10 border border-[#20222A] text-center space-y-4 relative overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.8)]">
@@ -514,25 +563,25 @@ export const LandingPage = () => {
             </div>
 
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-tech">
-              Discover & Grade Grocery Marts Transparently
+              Shop Better. Rate Honest. Discover Quality.
             </h2>
 
             <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
-              Join shoppers rating supermarkets, artisan bakeries, and gourmet delis across the region with verified community reviews.
+              Find fresh local groceries, organic produce, and top supermarkets recommended by everyday shoppers in your community.
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/register"
-                className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#CCFF00] hover:bg-[#b8e600] text-black font-extrabold text-xs shadow-[0_0_20px_rgba(204,255,0,0.3)] transition-all"
+                className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#CCFF00] hover:bg-[#b8e600] text-black font-extrabold text-xs shadow-[0_0_20px_rgba(204,255,0,0.3)] transition-all hover:scale-105 active:scale-95"
               >
-                Create Free Account
+                Join Free Community
               </Link>
               <Link
                 to="/login"
-                className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#1A1B22] hover:bg-[#22242D] text-zinc-200 border border-[#2C2E3B] font-bold text-xs transition-colors"
+                className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#1A1B22] hover:bg-[#22242D] text-zinc-200 border border-[#2C2E3B] font-bold text-xs transition-colors hover:scale-105 active:scale-95"
               >
-                Sign In to Dashboard
+                Sign In
               </Link>
             </div>
           </div>
@@ -556,4 +605,3 @@ export const LandingPage = () => {
 };
 
 export default LandingPage;
-
