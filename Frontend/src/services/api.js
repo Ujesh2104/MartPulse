@@ -1,7 +1,16 @@
 import axios from 'axios';
 
 // Automatically normalize base URL so it always points to the backend /api prefix
-const rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').trim();
+const isLocalhost = typeof window !== 'undefined' && (
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1'
+);
+
+const defaultApiUrl = isLocalhost
+  ? 'http://localhost:5000/api'
+  : 'https://martpulse.onrender.com/api';
+
+const rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || defaultApiUrl).trim();
 const baseURL = rawBaseUrl.endsWith('/api')
   ? rawBaseUrl
   : rawBaseUrl.endsWith('/')
