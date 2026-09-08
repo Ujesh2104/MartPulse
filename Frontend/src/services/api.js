@@ -10,7 +10,7 @@ const baseURL = rawBaseUrl.endsWith('/api')
 
 const API = axios.create({
   baseURL,
-  timeout: 15000,
+  timeout: 60000, // 60 seconds to accommodate Render free-tier cold starts
   headers: {
     'Content-Type': 'application/json',
   },
@@ -29,7 +29,16 @@ API.interceptors.request.use(
 
 API.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const config = error.config;
+    // Auto-retry once on network error / timeout to survive Render wakeups
+    if (config && !config.__isRetry && (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK' || !error.response)) {
+      config.__isRetry = true;
+      console.warn('⚡ MartPulse API: Retrying request to wake up Render backend...');
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      return API(config);
+    }
+
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('martpulse_token');
       localStorage.removeItem('martpulse_user');
