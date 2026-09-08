@@ -17,16 +17,8 @@ import {
   CheckCircle2,
   SlidersHorizontal,
   ChevronDown,
-  ChevronUp,
   Layers,
   ShoppingBag,
-  X,
-  Store as StoreIcon,
-  Tag,
-  Coffee,
-  ShoppingBasket,
-  Wine,
-  Apple,
 } from 'lucide-react';
 import RateStoreModal from '../components/Modals/RateStoreModal';
 import AnimatedSection from '../components/AnimatedSection';
@@ -37,69 +29,20 @@ export const LandingPage = () => {
 
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('All items');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [categorySearch, setCategorySearch] = useState('');
   const [minRatingFilter, setMinRatingFilter] = useState(0);
-  const [selectedCategories, setSelectedCategories] = useState([]);
   const [sortBy, setSortBy] = useState('rating_desc');
   const [favorites, setFavorites] = useState({});
-  const [categoryOpen, setCategoryOpen] = useState(true);
-  const [ratingOpen, setRatingOpen] = useState(true);
 
   // Rating Modal
   const [ratingStore, setRatingStore] = useState(null);
 
-  // Natural Human Slogans for Typewriter Animation
-  const slogans = [
-    "Fresh Groceries. Real Ratings. Trusted Marts.",
-    "Find Top Supermarkets & Organic Grocers Near You.",
-    "Real Shoppers, Honest Reviews — No Sponsored Fluff.",
-    "Shop Fresh. Save Time. Rate Your Favorite Stores.",
-  ];
-  const [sloganIndex, setSloganIndex] = useState(0);
-  const [displayText, setDisplayText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    const currentSlogan = slogans[sloganIndex];
-    let typingSpeed = isDeleting ? 30 : 60;
-
-    if (!isDeleting && displayText === currentSlogan) {
-      const pauseTimeout = setTimeout(() => setIsDeleting(true), 2500);
-      return () => clearTimeout(pauseTimeout);
-    }
-
-    if (isDeleting && displayText === '') {
-      setIsDeleting(false);
-      setSloganIndex((prev) => (prev + 1) % slogans.length);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setDisplayText((prev) =>
-        isDeleting
-          ? currentSlogan.substring(0, prev.length - 1)
-          : currentSlogan.substring(0, prev.length + 1)
-      );
-    }, typingSpeed);
-
-    return () => clearTimeout(timer);
-  }, [displayText, isDeleting, sloganIndex]);
-
-  const navCategories = [
-    'All items',
-    'Luxury Supermarket',
-    'Organic Grocery',
-    'Gourmet Deli',
-    'Modern Mart',
-  ];
-
-  const allAvailableCategories = [
-    'Luxury Supermarket',
-    'Organic Grocery',
-    'Gourmet Deli',
-    'Modern Mart',
+  const categories = [
+    'All',
+    'Gourmet & Hypermarket',
+    'Organic & Artisan Grocery',
+    'Premium Supermarket',
     'Wine & Specialty Market',
     'Departmental & Provisions',
   ];
@@ -107,10 +50,9 @@ export const LandingPage = () => {
   const fetchStores = async () => {
     try {
       setLoading(true);
-      const categoryParam = selectedCategory === 'All items' ? '' : selectedCategory;
       const res = await storeAPI.getAllStores({
         search: searchQuery,
-        category: categoryParam,
+        category: selectedCategory === 'All' ? '' : selectedCategory,
         sort: sortBy,
       });
       if (res && res.stores) {
@@ -144,175 +86,161 @@ export const LandingPage = () => {
     setRatingStore(store);
   };
 
-  const handleCategoryCheckbox = (cat) => {
-    if (selectedCategories.includes(cat)) {
-      setSelectedCategories(selectedCategories.filter((c) => c !== cat));
-    } else {
-      setSelectedCategories([...selectedCategories, cat]);
-    }
-  };
-
-  const resetAllFilters = () => {
-    setSelectedCategory('All items');
-    setSelectedCategories([]);
-    setMinRatingFilter(0);
-    setSearchQuery('');
-    setCategorySearch('');
-    setSortBy('rating_desc');
-  };
-
-  // Filter stores locally based on sidebar selections
   const filteredStores = stores.filter((s) => {
-    if (minRatingFilter > 0 && (s.rating || 0) < minRatingFilter) {
-      return false;
-    }
-    if (selectedCategories.length > 0 && !selectedCategories.includes(s.category)) {
-      return false;
+    if (minRatingFilter > 0) {
+      return (s.rating || 0) >= minRatingFilter;
     }
     return true;
   });
 
-  const getStoreVectorIcon = (category) => {
-    const cat = String(category).toLowerCase();
-    if (cat.includes('luxury') || cat.includes('supermarket')) {
-      return <ShoppingBasket className="w-10 h-10 text-[#CCFF00] group-hover:scale-110 transition-transform duration-300" />;
+  const scrollToCatalog = () => {
+    const el = document.getElementById('marts-catalog');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
     }
-    if (cat.includes('organic') || cat.includes('artisan')) {
-      return <Apple className="w-10 h-10 text-emerald-400 group-hover:scale-110 transition-transform duration-300" />;
-    }
-    if (cat.includes('gourmet') || cat.includes('deli')) {
-      return <Coffee className="w-10 h-10 text-amber-400 group-hover:scale-110 transition-transform duration-300" />;
-    }
-    if (cat.includes('wine')) {
-      return <Wine className="w-10 h-10 text-purple-400 group-hover:scale-110 transition-transform duration-300" />;
-    }
-    return <StoreIcon className="w-10 h-10 text-[#CCFF00] group-hover:scale-110 transition-transform duration-300" />;
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0B0E] text-slate-100 space-y-6 pb-20 selection:bg-[#CCFF00] selection:text-black">
-      {/* 1. HERO & SLOGAN BANNER WITH ATTRACTIVE TYPING ANIMATION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="space-y-4">
-          {/* Breadcrumb & Live Status Pill */}
-          <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 text-zinc-500 font-medium">
-              <Link to="/" className="hover:text-zinc-300 transition-colors">Home</Link>
-              <span>·</span>
-              <span className="text-zinc-300">Bestsellers & Local Marts</span>
-            </div>
+    <div className="min-h-screen bg-[#F4F5FA] space-y-12 sm:space-y-16 pb-16">
+      {/* 1. HERO SECTION WITH FADE-IN ANIMATION */}
+      <section className="relative pt-12 sm:pt-20 pb-8 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-3/4 h-80 bg-gradient-to-b from-[#5B4DFF]/8 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none"></div>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#121318] border border-[#1E2028] text-[11px] font-semibold text-zinc-300">
-              <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-ping" />
-              <span>Real Shopper Ratings Active</span>
-            </div>
+        <AnimatedSection animation="fade-up" className="max-w-5xl mx-auto text-center space-y-6 relative z-10">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+            Discover & Rate the Finest <br />
+            <span className="text-[#5B4DFF]">Grocery Stores</span> Near You
+          </h1>
+
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            MartPulse empowers shoppers with verified, transparent ratings for local supermarkets,
+            gourmet delis, and artisan markets. Browse honest community feedback or share your own experience.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <button
+              onClick={scrollToCatalog}
+              className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white font-bold text-xs sm:text-sm shadow-[0_4px_16px_rgba(91,77,255,0.35)] hover:shadow-[0_6px_20px_rgba(91,77,255,0.45)] transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5"
+            >
+              <span>Explore All Marts</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <Link
+              to={isAuthenticated ? '/user/dashboard' : '/register'}
+              className="w-full sm:w-auto px-7 py-3 rounded-full bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm border border-slate-200/90 shadow-xs hover:border-slate-300 transition-all flex items-center justify-center gap-2"
+            >
+              <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+              <span>{isAuthenticated ? 'Open Dashboard' : 'Rate a Mart (Free)'}</span>
+            </Link>
           </div>
 
-          {/* Large Headline with Animated Typing Slogan */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-4 border-b border-[#1A1B22]">
-            <div className="space-y-2">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight font-tech">
-                Bestsellers
-              </h1>
-
-              {/* Typing Slogan Line */}
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-zinc-400 h-6">
-                <span className="text-white font-semibold">{displayText}</span>
-                <span className="w-1.5 h-4 bg-[#CCFF00] inline-block animate-pulse" />
-              </div>
+          <div className="pt-8 grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto">
+            <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-2xs hover:scale-105 transition-transform duration-300">
+              <div className="text-base sm:text-xl font-extrabold text-slate-900">4.9 ★</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 font-medium">Avg Verified Score</div>
             </div>
-
-            {/* Category Nav Tabs Matching Image 2 */}
-            <div className="flex items-center gap-6 overflow-x-auto pb-1 scrollbar-none">
-              {navCategories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap transition-all relative py-1.5 ${
-                    selectedCategory === cat
-                      ? 'text-[#CCFF00] font-bold'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  {cat}
-                  {selectedCategory === cat && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#CCFF00] rounded-full shadow-[0_0_8px_#CCFF00]"></span>
-                  )}
-                </button>
-              ))}
+            <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-2xs hover:scale-105 transition-transform duration-300">
+              <div className="text-base sm:text-xl font-extrabold text-slate-900">100%</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 font-medium">Authentic Feedback</div>
             </div>
-
-            {/* Sort Dropdown Filter */}
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none pl-8 pr-8 py-2 bg-[#14151B] hover:bg-[#1A1B22] text-xs font-bold text-white rounded-xl border border-[#262833] focus:border-[#CCFF00]/50 outline-none cursor-pointer transition-all"
-                >
-                  <option value="rating_desc">⚡ Top rated</option>
-                  <option value="rating_asc">★ Lowest rated</option>
-                  <option value="name_asc">A → Z Alphabetical</option>
-                  <option value="name_desc">Z → A Alphabetical</option>
-                </select>
-                <SlidersHorizontal className="w-3.5 h-3.5 text-[#CCFF00] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+            <div className="p-3 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/80 shadow-2xs hover:scale-105 transition-transform duration-300">
+              <div className="text-base sm:text-xl font-extrabold text-slate-900">3 Roles</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 font-medium">Dedicated Portals</div>
             </div>
           </div>
+        </AnimatedSection>
+      </section>
+
+      {/* 2. HOW IT WORKS SECTION WITH STAGGERED FADE-IN */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection animation="fade-up" className="text-center space-y-2 mb-8">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#5B4DFF]">
+            Simple & Transparent
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            How MartPulse Operates
+          </h2>
+        </AnimatedSection>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <AnimatedSection animation="fade-up" delay={100}>
+            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 space-y-3 hover:-translate-y-1">
+              <div className="w-10 h-10 rounded-2xl bg-[#5B4DFF]/10 text-[#5B4DFF] flex items-center justify-center font-extrabold text-sm">
+                01
+              </div>
+              <h3 className="text-base font-bold text-slate-900">Explore Nearby Marts</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Search by mart name, address, or category. View average star ratings and authentic customer review streams.
+              </p>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection animation="fade-up" delay={200}>
+            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 space-y-3 hover:-translate-y-1">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-extrabold text-sm">
+                02
+              </div>
+              <h3 className="text-base font-bold text-slate-900">Grade with 1-5 Stars</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Rate produce freshness, staff courtesy, and checkout speed. Modify your rating anytime as services evolve.
+              </p>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection animation="fade-up" delay={300}>
+            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 space-y-3 hover:-translate-y-1">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-extrabold text-sm">
+                03
+              </div>
+              <h3 className="text-base font-bold text-slate-900">Empower Local Retailers</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Store owners receive dedicated analytics consoles with review curves to continuously refine their supermarket aisles.
+              </p>
+            </div>
+          </AnimatedSection>
         </div>
       </section>
 
-      {/* 2. MAIN STORE DISCOVERY GRID & SIDEBAR FILTERS (EXACT IMAGE 2 LAYOUT) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          
-          {/* LEFT SIDEBAR FILTERS */}
-          <aside className="lg:col-span-1 space-y-6">
-            {/* Active Filter Chips & Reset */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={resetAllFilters}
-                  className="text-xs font-bold text-zinc-400 hover:text-[#CCFF00] flex items-center gap-1.5 transition-colors"
-                >
-                  <X className="w-3.5 h-3.5" />
-                  <span>Reset filters</span>
-                </button>
-              </div>
+      {/* 3. LIVE INTERACTIVE MARTS CATALOG */}
+      <section id="marts-catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-4">
+        <AnimatedSection animation="fade-up" className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-2 border-b border-slate-200/80">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#5B4DFF]">
+              Live Catalog
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Verified Retail Marts Directory
+            </h2>
+          </div>
+          <p className="text-xs text-slate-500">
+            Real-time community database updated via MySQL & Sequelize
+          </p>
+        </AnimatedSection>
 
-              {/* Filter Pills */}
-              <div className="flex flex-wrap gap-2">
-                {selectedCategory !== 'All items' && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#16171E] border border-[#2A2B36] text-[11px] font-semibold text-white">
-                    {selectedCategory}
-                    <button onClick={() => setSelectedCategory('All items')} className="text-zinc-400 hover:text-white">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                )}
-                {selectedCategories.map((c) => (
-                  <span key={c} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#16171E] border border-[#2A2B36] text-[11px] font-semibold text-white">
-                    {c}
-                    <button onClick={() => handleCategoryCheckbox(c)} className="text-zinc-400 hover:text-white">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-                {minRatingFilter > 0 && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#16171E] border border-[#2A2B36] text-[11px] font-semibold text-[#CCFF00]">
-                    ★ {minRatingFilter}+ Stars
-                    <button onClick={() => setMinRatingFilter(0)} className="text-zinc-400 hover:text-white">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                )}
-              </div>
-            </div>
+        {/* Top Category Filter Pill Bar */}
+        <AnimatedSection animation="fade-up" delay={100} className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-semibold transition-all ${
+                selectedCategory === cat
+                  ? 'bg-[#5B4DFF] text-white shadow-[0_4px_14px_rgba(91,77,255,0.3)]'
+                  : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200/80 shadow-xs'
+              }`}
+            >
+              {cat === 'All' ? 'All Categories' : cat}
+            </button>
+          ))}
+        </AnimatedSection>
 
-            {/* Filter Search Input */}
-            <div className="bg-[#121318] p-4 rounded-2xl border border-[#1F2029] space-y-3 shadow-lg">
-              <label className="text-[11px] font-extrabold uppercase tracking-wider text-zinc-400">
+        {/* Main Grid: Left Sidebar Filters + Right Store Card Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Left Filter Sidebar */}
+          <AnimatedSection animation="fade-up" delay={150} className="lg:col-span-1 space-y-5">
+            {/* Search Box */}
+            <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-800">
                 Search Marts
               </label>
               <form onSubmit={handleSearchSubmit} className="relative">
@@ -321,267 +249,228 @@ export const LandingPage = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Store name, street..."
-                  className="w-full pl-9 pr-3 py-2 bg-[#0C0D11] text-zinc-100 text-xs rounded-xl border border-[#23242E] focus:border-[#CCFF00]/50 outline-none transition-all placeholder:text-zinc-600"
+                  className="w-full pl-9 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-slate-800 text-xs rounded-2xl border border-slate-200 focus:border-[#5B4DFF]/40 focus:ring-2 focus:ring-[#5B4DFF]/10 outline-none transition-all placeholder:text-slate-400"
                 />
-                <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               </form>
             </div>
 
-            {/* Category / Type Filter Accordion */}
-            <div className="bg-[#121318] p-4 rounded-2xl border border-[#1F2029] space-y-3 shadow-lg">
-              <button
-                onClick={() => setCategoryOpen(!categoryOpen)}
-                className="w-full flex items-center justify-between text-xs font-bold text-white uppercase tracking-wider"
-              >
-                <span>Category / Type</span>
-                {categoryOpen ? <ChevronUp className="w-4 h-4 text-zinc-400" /> : <ChevronDown className="w-4 h-4 text-zinc-400" />}
-              </button>
+            {/* Star Rating Filter */}
+            <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Star Rating
+                </span>
+                {minRatingFilter > 0 && (
+                  <button
+                    onClick={() => setMinRatingFilter(0)}
+                    className="text-[11px] font-semibold text-[#5B4DFF] hover:underline"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
 
-              {categoryOpen && (
-                <div className="space-y-2.5 pt-1">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={categorySearch}
-                      onChange={(e) => setCategorySearch(e.target.value)}
-                      placeholder="Filter categories..."
-                      className="w-full pl-7 pr-2 py-1.5 bg-[#0C0D11] text-zinc-300 text-[11px] rounded-lg border border-[#20212A] focus:border-[#CCFF00]/40 outline-none placeholder:text-zinc-600"
-                    />
-                    <Search className="w-3 h-3 text-zinc-600 absolute left-2 top-1/2 -translate-y-1/2" />
-                  </div>
-
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                    {allAvailableCategories
-                      .filter((c) => c.toLowerCase().includes(categorySearch.toLowerCase()))
-                      .map((cat) => {
-                        const isChecked = selectedCategories.includes(cat);
-                        return (
-                          <label
-                            key={cat}
-                            onClick={() => handleCategoryCheckbox(cat)}
-                            className="flex items-center gap-2.5 text-xs text-zinc-300 hover:text-white cursor-pointer select-none py-1 group"
-                          >
-                            <div
-                              className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
-                                isChecked
-                                  ? 'bg-[#CCFF00] border-[#CCFF00] text-black font-extrabold shadow-[0_0_8px_rgba(204,255,0,0.4)]'
-                                  : 'border-[#2D2F3C] bg-[#0C0D11] group-hover:border-zinc-500'
-                              }`}
-                            >
-                              {isChecked && <span className="text-[10px] leading-none">✓</span>}
-                            </div>
-                            <span className="text-xs font-medium">{cat}</span>
-                          </label>
-                        );
-                      })}
-                  </div>
-                </div>
-              )}
+              <div className="space-y-1.5">
+                {[5, 4, 3, 2, 1].map((stars) => (
+                  <button
+                    key={stars}
+                    onClick={() => setMinRatingFilter(minRatingFilter === stars ? 0 : stars)}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                      minRatingFilter === stars
+                        ? 'bg-[#5B4DFF]/10 text-[#5B4DFF] font-bold'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex text-amber-400">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-3.5 h-3.5 ${
+                              i < stars ? 'fill-amber-400 text-amber-400' : 'text-slate-200'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-slate-500 font-semibold">{stars} Stars & up</span>
+                    </div>
+                    <div
+                      className={`w-4 h-4 rounded-md border flex items-center justify-center ${
+                        minRatingFilter === stars
+                          ? 'bg-[#5B4DFF] border-[#5B4DFF] text-white'
+                          : 'border-slate-300'
+                      }`}
+                    >
+                      {minRatingFilter === stars && <span className="text-[10px]">✓</span>}
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Star Rating Accordion */}
-            <div className="bg-[#121318] p-4 rounded-2xl border border-[#1F2029] space-y-3 shadow-lg">
-              <button
-                onClick={() => setRatingOpen(!ratingOpen)}
-                className="w-full flex items-center justify-between text-xs font-bold text-white uppercase tracking-wider"
-              >
-                <span>Minimum Rating</span>
-                {ratingOpen ? <ChevronUp className="w-4 h-4 text-zinc-400" /> : <ChevronDown className="w-4 h-4 text-zinc-400" />}
-              </button>
-
-              {ratingOpen && (
-                <div className="space-y-1.5 pt-1">
-                  {[5, 4, 3, 2].map((stars) => {
-                    const isSelected = minRatingFilter === stars;
-                    return (
-                      <button
-                        key={stars}
-                        onClick={() => setMinRatingFilter(isSelected ? 0 : stars)}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                          isSelected
-                            ? 'bg-[#1C1E26] border border-[#CCFF00]/40 text-white font-bold'
-                            : 'text-zinc-400 hover:bg-[#16171E] hover:text-zinc-200 border border-transparent'
-                        }`}
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <div className="flex text-amber-400">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-3.5 h-3.5 ${
-                                  i < stars ? 'fill-amber-400 text-amber-400' : 'text-zinc-700'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <span className="text-zinc-300 font-bold ml-1">{stars}★ & up</span>
-                        </div>
-                        <div
-                          className={`w-4 h-4 rounded-md border flex items-center justify-center ${
-                            isSelected
-                              ? 'bg-[#CCFF00] border-[#CCFF00] text-black font-extrabold'
-                              : 'border-[#2D2F3C] bg-[#0C0D11]'
-                          }`}
-                        >
-                          {isSelected && <span className="text-[10px]">✓</span>}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+            {/* Sort Options */}
+            <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                Sort Marts
+              </span>
+              <div className="space-y-1">
+                {[
+                  { label: 'Highest Rated First', val: 'rating_desc' },
+                  { label: 'Lowest Rated First', val: 'rating_asc' },
+                  { label: 'Name (A to Z)', val: 'name_asc' },
+                  { label: 'Name (Z to A)', val: 'name_desc' },
+                ].map((s) => (
+                  <button
+                    key={s.val}
+                    onClick={() => setSortBy(s.val)}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                      sortBy === s.val
+                        ? 'bg-[#5B4DFF] text-white font-bold'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </aside>
+          </AnimatedSection>
 
-          {/* RIGHT STORE CARDS GRID */}
-          <main className="lg:col-span-3 space-y-6">
+          {/* Right Store Card Grid */}
+          <div className="lg:col-span-3 space-y-4">
             <div className="flex items-center justify-between px-1">
-              <p className="text-xs text-zinc-400 font-medium">
-                Showing <strong className="text-white font-extrabold text-sm">{filteredStores.length}</strong> verified marts
-              </p>
-              <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
-                Category: <span className="text-[#CCFF00]">{selectedCategory}</span>
+              <h3 className="text-sm font-bold text-slate-800">
+                Showing <span className="text-[#5B4DFF]">{filteredStores.length}</span> Verified Marts
+              </h3>
+              <span className="text-xs text-slate-400">
+                Category: <strong className="text-slate-700">{selectedCategory}</strong>
               </span>
             </div>
 
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div
                     key={i}
-                    className="bg-[#131419] h-80 rounded-2xl border border-[#20222A] animate-pulse p-5 space-y-4"
+                    className="bg-white h-72 rounded-3xl border border-slate-200/80 animate-pulse p-5 space-y-4"
                   >
-                    <div className="w-16 h-5 bg-[#20222A] rounded-full"></div>
-                    <div className="w-full h-36 bg-[#1A1B22] rounded-xl"></div>
-                    <div className="w-3/4 h-4 bg-[#20222A] rounded-md"></div>
+                    <div className="w-16 h-5 bg-slate-200 rounded-full"></div>
+                    <div className="w-full h-28 bg-slate-100 rounded-2xl"></div>
+                    <div className="w-3/4 h-4 bg-slate-200 rounded-md"></div>
                   </div>
                 ))}
               </div>
             ) : filteredStores.length === 0 ? (
-              <div className="bg-[#121318] rounded-2xl border border-[#20222A] p-12 text-center space-y-3">
-                <Building2 className="w-12 h-12 text-zinc-600 mx-auto" />
-                <h3 className="text-base font-bold text-white">No marts found</h3>
-                <p className="text-xs text-zinc-400">
-                  Try adjusting your search criteria or reset filters to see all available stores.
+              <AnimatedSection animation="scale" className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center space-y-3">
+                <Building2 className="w-12 h-12 text-slate-300 mx-auto" />
+                <h3 className="text-base font-bold text-slate-800">No stores found</h3>
+                <p className="text-xs text-slate-500">
+                  Try adjusting your search query or choosing another category.
                 </p>
-                <button
-                  onClick={resetAllFilters}
-                  className="px-5 py-2 rounded-xl bg-[#CCFF00] text-black text-xs font-extrabold hover:bg-[#b8e600] transition-colors"
-                >
-                  Reset All Filters
-                </button>
-              </div>
+              </AnimatedSection>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredStores.map((store, index) => {
-                  const avgRating = parseFloat(store.rating || 0).toFixed(1);
-                  const isFavorited = favorites[store.id];
-                  return (
-                    <AnimatedSection
-                      key={store.id}
-                      animation="fade-up"
-                      delay={(index % 3) * 80}
-                      className="h-full"
-                    >
-                      <div className="group bg-[#131419] hover:bg-[#16171E] rounded-2xl border border-[#20222A] hover:border-[#CCFF00]/40 p-4 transition-all duration-300 flex flex-col justify-between relative hover:shadow-[0_12px_32px_rgba(0,0,0,0.8),0_0_24px_rgba(204,255,0,0.12)] hover:-translate-y-1 h-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {filteredStores.map((store, index) => (
+                  <AnimatedSection
+                    key={store.id}
+                    animation="fade-up"
+                    delay={(index % 3) * 100}
+                    className="h-full"
+                  >
+                    <div className="group bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative hover:-translate-y-1.5 h-full">
+                      {/* Top Row */}
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#5B4DFF]/10 text-[#5B4DFF]">
+                          {store.category || 'Supermarket'}
+                        </span>
+                        <button
+                          onClick={() => toggleFavorite(store.id)}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border ${
+                            favorites[store.id]
+                              ? 'bg-rose-50 border-rose-200 text-rose-500'
+                              : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-200'
+                          }`}
+                          title="Save to favorites"
+                        >
+                          <Heart
+                            className={`w-4 h-4 ${favorites[store.id] ? 'fill-rose-500' : ''}`}
+                          />
+                        </button>
+                      </div>
+
+                      {/* Middle Graphic */}
+                      <div className="relative rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-4 mb-4 flex items-center justify-center h-32 border border-slate-100 overflow-hidden">
+                        <Building2 className="w-12 h-12 text-[#5B4DFF]/40 group-hover:scale-110 group-hover:text-[#5B4DFF] transition-all duration-300" />
                         
-                        {/* Top Row: Sale/Verified Badge + Bookmark Heart */}
-                        <div className="flex items-center justify-between mb-3 relative z-10">
-                          <span className="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-[#CCFF00] text-black shadow-[0_0_10px_rgba(204,255,0,0.3)]">
-                            {store.rating >= 4.8 ? 'Top Mart' : 'Verified'}
-                          </span>
-
-                          <button
-                            onClick={() => toggleFavorite(store.id)}
-                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border ${
-                              isFavorited
-                                ? 'bg-rose-500/20 border-rose-500/40 text-rose-400'
-                                : 'bg-[#181920] border-[#2A2B36] text-zinc-400 hover:text-white hover:border-zinc-500'
-                            }`}
-                            title="Save Mart"
-                          >
-                            <Heart className={`w-3.5 h-3.5 ${isFavorited ? 'fill-rose-500 text-rose-500' : ''}`} />
-                          </button>
-                        </div>
-
-                        {/* Graphic Product Visual Container */}
-                        <div className="relative rounded-xl bg-[#0B0C0E] border border-[#1D1E26] p-6 mb-4 flex items-center justify-center h-36 overflow-hidden group-hover:border-[#CCFF00]/20 transition-all">
-                          <div className="absolute inset-0 bg-gradient-to-br from-[#CCFF00]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                          {getStoreVectorIcon(store.category)}
-                        </div>
-
-                        {/* Store Brand, Category & Title */}
-                        <div className="space-y-1 mb-4 flex-grow">
-                          <div className="flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-zinc-400">
-                            <span>{store.category || 'MART'}</span>
-                            <div className="flex items-center gap-1 text-[#FBBF24] font-extrabold text-xs">
-                              <Star className="w-3.5 h-3.5 fill-[#FBBF24] text-[#FBBF24]" />
-                              <span>{avgRating}</span>
-                            </div>
-                          </div>
-
-                          <h3 className="text-sm font-bold text-white group-hover:text-[#CCFF00] transition-colors line-clamp-1">
-                            {store.name}
-                          </h3>
-
-                          <p className="text-xs text-zinc-400 flex items-start gap-1 line-clamp-2 pt-0.5">
-                            <MapPin className="w-3.5 h-3.5 text-zinc-500 flex-shrink-0 mt-0.5" />
-                            <span>{store.address}</span>
-                          </p>
-                        </div>
-
-                        {/* Bottom Action Section: Reviews count + Rate Button */}
-                        <div className="pt-3 border-t border-[#1F2029] flex items-center justify-between gap-2">
-                          <div className="text-[11px] text-zinc-400 font-semibold">
-                            {store.ratingCount || 0} reviews
-                          </div>
-
-                          <button
-                            onClick={() => handleRateClick(store)}
-                            className="px-3.5 py-1.5 rounded-xl bg-[#1C1E26] hover:bg-[#CCFF00] text-zinc-200 hover:text-black border border-[#2D2F3C] hover:border-[#CCFF00] text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm hover:shadow-[0_0_16px_rgba(204,255,0,0.3)]"
-                          >
-                            <Star className="w-3 h-3 fill-current" />
-                            <span>{store.userRating ? `Rated ${store.userRating}★` : 'Rate Mart'}</span>
-                          </button>
+                        <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-white shadow-sm border border-slate-200/80 text-xs font-extrabold text-slate-800">
+                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                          <span>{parseFloat(store.rating || 0).toFixed(1)}</span>
                         </div>
                       </div>
-                    </AnimatedSection>
-                  );
-                })}
+
+                      {/* Store Title & Address */}
+                      <div className="space-y-1.5 mb-4 flex-grow">
+                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-[#5B4DFF] transition-colors line-clamp-1">
+                          {store.name}
+                        </h3>
+                        <p className="text-xs text-slate-500 flex items-start gap-1 line-clamp-2">
+                          <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
+                          <span>{store.address}</span>
+                        </p>
+                      </div>
+
+                      {/* Bottom Action Pill */}
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <div className="text-[11px] text-slate-400 font-medium">
+                          {store.ratingCount || 0} reviews
+                        </div>
+
+                        <button
+                          onClick={() => handleRateClick(store)}
+                          className="px-4 py-2 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white text-xs font-bold shadow-[0_4px_10px_rgba(91,77,255,0.25)] hover:shadow-[0_6px_14px_rgba(91,77,255,0.35)] transition-all flex items-center gap-1.5"
+                        >
+                          <Star className="w-3.5 h-3.5 fill-white text-white" />
+                          <span>{store.userRating ? `Rated: ${store.userRating}★` : 'Rate Mart'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </AnimatedSection>
+                ))}
               </div>
             )}
-          </main>
+          </div>
         </div>
       </section>
 
-      {/* 3. CALL TO ACTION SECTION WITH NATURAL HUMAN SLOGAN */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      {/* 4. CALL TO ACTION SECTION WITH SCALE-IN ANIMATION */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <AnimatedSection animation="scale">
-          <div className="bg-[#121318] rounded-3xl p-8 sm:p-10 border border-[#20222A] text-center space-y-4 relative overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.8)]">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20 mb-1">
+          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-sm text-center space-y-5 relative overflow-hidden hover:shadow-md transition-shadow">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#5B4DFF]/10 text-[#5B4DFF] mb-1">
               <ShoppingBag className="w-6 h-6" />
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-tech">
-              Shop Better. Rate Honest. Discover Quality.
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Ready to Rate Your Favorite Grocery Marts?
             </h2>
 
-            <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
-              Find fresh local groceries, organic produce, and top supermarkets recommended by everyday shoppers in your community.
+            <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto leading-relaxed">
+              Join thousands of smart shoppers rating supermarket aisles, artisan bakeries, and gourmet delis across the region.
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/register"
-                className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#CCFF00] hover:bg-[#b8e600] text-black font-extrabold text-xs shadow-[0_0_20px_rgba(204,255,0,0.3)] transition-all hover:scale-105 active:scale-95"
+                className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#5B4DFF] hover:bg-[#4B3BE6] text-white font-bold text-xs shadow-[0_4px_16px_rgba(91,77,255,0.35)] transition-all"
               >
-                Join Free Community
+                Create Free Account
               </Link>
               <Link
                 to="/login"
-                className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#1A1B22] hover:bg-[#22242D] text-zinc-200 border border-[#2C2E3B] font-bold text-xs transition-colors hover:scale-105 active:scale-95"
+                className="w-full sm:w-auto px-7 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
               >
-                Sign In
+                Sign In to Dashboard
               </Link>
             </div>
           </div>
