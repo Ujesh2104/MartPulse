@@ -8,7 +8,7 @@ const isLocalhost = typeof window !== 'undefined' && (
 
 const defaultApiUrl = isLocalhost
   ? 'http://localhost:5000/api'
-  : 'https://martpulse.onrender.com/api';
+  : 'https://martpulse-65jl.onrender.com/api';
 
 const rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || defaultApiUrl).trim();
 const baseURL = rawBaseUrl.endsWith('/api')

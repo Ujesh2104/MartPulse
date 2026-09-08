@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "https://martpulse.onrender.com/api/:match*"
+      "destination": "https://martpulse-65jl.onrender.com/api/:match*"
     },
     {
       "source": "/(.*)",
