@@ -54,13 +54,7 @@ export const Navbar = () => {
           <div className="flex items-center justify-between h-18 py-3">
             {/* Left: Modern Logo */}
             <div className="flex items-center gap-8">
-              <Link
-                to="/"
-                onClick={() => {
-                  if (isAuthenticated) logout();
-                }}
-                className="group flex items-center"
-              >
+              <Link to="/" className="group flex items-center">
                 <MartPulseLogo size="md" />
               </Link>
 
@@ -83,9 +77,6 @@ export const Navbar = () => {
             <nav className="hidden md:flex items-center space-x-6">
               <Link
                 to="/"
-                onClick={() => {
-                  if (isAuthenticated) logout();
-                }}
                 className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
                   location.pathname === '/'
                     ? 'text-[#5B4DFF] bg-[#5B4DFF]/10'

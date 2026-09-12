@@ -79,13 +79,8 @@ export const AuthProvider = ({ children }) => {
     return () => clearTimeout(timer);
   }, [token, clearAuth]);
 
-  // Automatic expiry when user goes off-screen, switches tabs, or closes the browser
+  // Heartbeat & focus token validity checks
   useEffect(() => {
-    const handleOffScreenOrUnload = () => {
-      // If tab becomes hidden (user switches tab or minimizes window) or closes browser
-      clearAuth();
-    };
-
     const handleCheckToken = () => {
       const storedToken = getStoredValidToken();
       if (!storedToken && token) {
@@ -93,20 +88,13 @@ export const AuthProvider = ({ children }) => {
       }
     };
 
-    // 1. Off-screen / Tab close listeners
-    window.addEventListener('pagehide', handleOffScreenOrUnload);
-    window.addEventListener('beforeunload', handleOffScreenOrUnload);
-
-    // 2. Focus & route change checks
     window.addEventListener('focus', handleCheckToken);
     window.addEventListener('popstate', handleCheckToken);
 
-    // 3. Periodic heartbeat check every 3 seconds
-    const interval = setInterval(handleCheckToken, 3000);
+    // Periodic heartbeat check every 5 seconds to purge expired tokens
+    const interval = setInterval(handleCheckToken, 5000);
 
     return () => {
-      window.removeEventListener('pagehide', handleOffScreenOrUnload);
-      window.removeEventListener('beforeunload', handleOffScreenOrUnload);
       window.removeEventListener('focus', handleCheckToken);
       window.removeEventListener('popstate', handleCheckToken);
       clearInterval(interval);
