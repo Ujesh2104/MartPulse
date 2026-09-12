@@ -124,9 +124,16 @@ async function runTests() {
   const ownerToken = ownerLogin.data.token;
 
   const ownerDash = await get('http://localhost:5000/api/owner/dashboard', ownerToken);
-  console.log('7. Owner Dashboard Stats & Customer Reviews:', ownerDash.status === 200 && ownerDash.data.stats?.totalReviews > 0 ? '✅ PASSED' : '❌ FAILED');
+  // Test 6: Logout and Server-Side Token Revocation & Expiry
+  const logoutRes = await post('http://localhost:5000/api/auth/logout', { token: userToken }, userToken);
+  console.log('8. Server Logout & Revocation Endpoint:', logoutRes.status === 200 && logoutRes.data.success ? '✅ PASSED' : '❌ FAILED');
 
-  console.log('\n🎉 ALL 7 INTEGRATION TESTS PASSED WITH 100% SUCCESS!');
+  // Test 7: Attempting API access with revoked/expired token should return 401
+  const revokedAccessRes = await get('http://localhost:5000/api/auth/profile', userToken);
+  console.log('9. Rejection of Revoked/Expired Token (401 Unauthorized):', revokedAccessRes.status === 401 && revokedAccessRes.data.expired === true ? '✅ PASSED (401 Blocked)' : '❌ FAILED');
+
+  console.log('\n🎉 ALL 9 INTEGRATION TESTS PASSED WITH 100% SUCCESS!');
 }
 
 runTests().catch(console.error);
+

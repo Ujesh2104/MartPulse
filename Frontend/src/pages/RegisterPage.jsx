@@ -22,7 +22,7 @@ import MartPulseLogo from '../components/MartPulseLogo';
 import AnimatedSection from '../components/AnimatedSection';
 
 export const RegisterPage = () => {
-  const { register, loading, authError } = useAuth();
+  const { register, loading, authError, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -36,6 +36,18 @@ export const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState('');
+
+  React.useEffect(() => {
+    if (isAuthenticated && user?.role) {
+      if (user.role === 'ADMIN') {
+        navigate('/admin/dashboard', { replace: true });
+      } else if (user.role === 'STORE_OWNER') {
+        navigate('/owner/dashboard', { replace: true });
+      } else {
+        navigate('/user/dashboard', { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

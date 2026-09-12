@@ -24,7 +24,7 @@ import RateStoreModal from '../components/Modals/RateStoreModal';
 import AnimatedSection from '../components/AnimatedSection';
 
 export const LandingPage = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const [stores, setStores] = useState([]);
@@ -37,6 +37,13 @@ export const LandingPage = () => {
 
   // Rating Modal
   const [ratingStore, setRatingStore] = useState(null);
+
+  // Automatically expire token and log out if a logged-in user navigates to the public Homepage
+  useEffect(() => {
+    if (isAuthenticated) {
+      logout();
+    }
+  }, [isAuthenticated, logout]);
 
   const categories = [
     'All',

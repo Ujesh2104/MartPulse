@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getStoredValidToken } from '../utils/token';
 
 // Automatically normalize base URL so it always points to the backend /api prefix
 const isLocalhost = typeof window !== 'undefined' && (
@@ -27,9 +28,11 @@ const API = axios.create({
 
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('martpulse_token');
+    const token = getStoredValidToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      delete config.headers.Authorization;
     }
     return config;
   },
@@ -51,6 +54,10 @@ API.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('martpulse_token');
       localStorage.removeItem('martpulse_user');
+      delete API.defaults.headers.common['Authorization'];
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('martpulse_auth_unauthorized'));
+      }
     }
     return Promise.reject(error);
   }
@@ -66,6 +73,20 @@ export const authAPI = {
   register: async (userData) => {
     const response = await API.post('/auth/register', userData);
     return response.data;
+  },
+
+  logout: async (tokenToRevoke) => {
+    try {
+      const activeToken = tokenToRevoke || localStorage.getItem('martpulse_token');
+      const response = await API.post(
+        '/auth/logout',
+        { token: activeToken },
+        activeToken ? { headers: { Authorization: `Bearer ${activeToken}` } } : {}
+      );
+      return response.data;
+    } catch {
+      return { success: true };
+    }
   },
 
   changePassword: async (passwordData) => {

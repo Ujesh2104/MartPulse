@@ -1,32 +1,182 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import API, { authAPI } from '../services/api';
+import {
+  getStoredValidToken,
+  getStoredValidUser,
+  isTokenExpired,
+  getTokenRemainingTimeMs,
+} from '../utils/token';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('martpulse_user');
-    return saved ? JSON.parse(saved) : null;
-  });
-  const [token, setToken] = useState(() => localStorage.getItem('martpulse_token'));
+  const [user, setUser] = useState(() => getStoredValidUser());
+  const [token, setToken] = useState(() => getStoredValidToken());
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem('martpulse_token', token);
-    } else {
+  const clearAuth = useCallback(() => {
+    try {
       localStorage.removeItem('martpulse_token');
-    }
-  }, [token]);
-
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('martpulse_user', JSON.stringify(user));
-    } else {
       localStorage.removeItem('martpulse_user');
+      sessionStorage.removeItem('martpulse_token');
+      sessionStorage.removeItem('martpulse_user');
+    } catch {}
+    delete API.defaults.headers.common['Authorization'];
+    setToken(null);
+    setUser(null);
+    setAuthError(null);
+  }, []);
+
+  const logout = useCallback(() => {
+    const currentToken = getStoredValidToken() || token;
+    // 1. Instantly clear all tokens and user data locally
+    clearAuth();
+    // 2. Notify backend to revoke and expire the token on server
+    if (currentToken) {
+      authAPI.logout(currentToken).catch(() => {});
     }
-  }, [user]);
+  }, [clearAuth, token]);
+
+  // Sync token with localStorage and headers & auto-expire
+  useEffect(() => {
+    if (token && !isTokenExpired(token)) {
+      try {
+        localStorage.setItem('martpulse_token', token);
+      } catch {}
+    } else {
+      clearAuth();
+    }
+  }, [token, clearAuth]);
+
+  // Sync user with localStorage
+  useEffect(() => {
+    if (user && token && !isTokenExpired(token)) {
+      try {
+        localStorage.setItem('martpulse_user', JSON.stringify(user));
+      } catch {}
+    } else if (!user || !token || isTokenExpired(token)) {
+      try {
+        localStorage.removeItem('martpulse_user');
+      } catch {}
+    }
+  }, [user, token]);
+
+  // Real-time automatic token expiration timer
+  useEffect(() => {
+    if (!token) return;
+    const remainingMs = getTokenRemainingTimeMs(token);
+    if (remainingMs <= 0) {
+      clearAuth();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      console.warn('⚡ MartPulse Auth: Token reached expiration timestamp. Logging out...');
+      clearAuth();
+    }, remainingMs);
+
+    return () => clearTimeout(timer);
+  }, [token, clearAuth]);
+
+  // Automatic expiry when user goes off-screen, switches tabs, or closes the browser
+  useEffect(() => {
+    const handleOffScreenOrUnload = () => {
+      // If tab becomes hidden (user switches tab or minimizes window) or closes browser
+      clearAuth();
+    };
+
+    const handleCheckToken = () => {
+      const storedToken = getStoredValidToken();
+      if (!storedToken && token) {
+        clearAuth();
+      }
+    };
+
+    // 1. Off-screen / Tab close listeners
+    window.addEventListener('pagehide', handleOffScreenOrUnload);
+    window.addEventListener('beforeunload', handleOffScreenOrUnload);
+
+    // 2. Focus & route change checks
+    window.addEventListener('focus', handleCheckToken);
+    window.addEventListener('popstate', handleCheckToken);
+
+    // 3. Periodic heartbeat check every 3 seconds
+    const interval = setInterval(handleCheckToken, 3000);
+
+    return () => {
+      window.removeEventListener('pagehide', handleOffScreenOrUnload);
+      window.removeEventListener('beforeunload', handleOffScreenOrUnload);
+      window.removeEventListener('focus', handleCheckToken);
+      window.removeEventListener('popstate', handleCheckToken);
+      clearInterval(interval);
+    };
+  }, [token, clearAuth]);
+
+  // Inactivity / Idle Auto-Expiry (Auto-logout if user is inactive on screen for 5 minutes)
+  useEffect(() => {
+    if (!token) return;
+
+    let idleTimer;
+    const resetIdleTimer = () => {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        console.warn('⚡ MartPulse Auth: User inactive. Auto-expiring token and logging out...');
+        clearAuth();
+      }, 5 * 60 * 1000); // 5 minutes inactivity
+    };
+
+    const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
+    events.forEach((ev) => window.addEventListener(ev, resetIdleTimer, { passive: true }));
+    resetIdleTimer();
+
+    return () => {
+      clearTimeout(idleTimer);
+      events.forEach((ev) => window.removeEventListener(ev, resetIdleTimer));
+    };
+  }, [token, clearAuth]);
+
+  // Listen for 401 unauthorized events emitted by API interceptor
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      clearAuth();
+    };
+
+    window.addEventListener('martpulse_auth_unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('martpulse_auth_unauthorized', handleUnauthorized);
+    };
+  }, [clearAuth]);
+
+  // Verify session on initial app load if token exists
+  useEffect(() => {
+    let isMounted = true;
+    const verifySession = async () => {
+      const storedToken = getStoredValidToken();
+      if (storedToken) {
+        try {
+          const profile = await authAPI.getProfile();
+          if (isMounted && profile && profile.user) {
+            setUser(profile.user);
+            localStorage.setItem('martpulse_user', JSON.stringify(profile.user));
+          }
+        } catch (err) {
+          if (isMounted) {
+            clearAuth();
+          }
+        }
+      } else {
+        if (isMounted) {
+          clearAuth();
+        }
+      }
+    };
+
+    verifySession();
+    return () => {
+      isMounted = false;
+    };
+  }, [clearAuth]);
 
   const login = async (email, password) => {
     setLoading(true);
@@ -34,6 +184,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.login({ email, password });
       if (response && response.token && response.user) {
+        localStorage.setItem('martpulse_token', response.token);
+        localStorage.setItem('martpulse_user', JSON.stringify(response.user));
         setToken(response.token);
         setUser(response.user);
         return { success: true, user: response.user };
@@ -61,6 +213,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.register(userData);
       if (response && response.token && response.user) {
+        localStorage.setItem('martpulse_token', response.token);
+        localStorage.setItem('martpulse_user', JSON.stringify(response.user));
         setToken(response.token);
         setUser(response.user);
         return { success: true, user: response.user };
@@ -93,14 +247,6 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: false, error: msg };
     }
-  };
-
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    setAuthError(null);
-    localStorage.removeItem('martpulse_token');
-    localStorage.removeItem('martpulse_user');
   };
 
   return (

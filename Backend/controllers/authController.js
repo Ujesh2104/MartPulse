@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { User } = require('../models');
-const { JWT_SECRET } = require('../middlewares/auth');
+const { JWT_SECRET, revokeToken } = require('../middlewares/auth');
 const {
   validateName,
   validateEmail,
@@ -169,9 +169,35 @@ const getProfile = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    let token = null;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    } else if (req.body && req.body.token) {
+      token = req.body.token;
+    }
+
+    if (token) {
+      revokeToken(token);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Logged out successfully. Authentication token has been revoked and expired.',
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    return res.status(500).json({ message: 'Internal server error during logout.' });
+  }
+};
+
 module.exports = {
   login,
   register,
   changePassword,
   getProfile,
+  logout,
 };
+

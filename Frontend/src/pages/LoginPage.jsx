@@ -17,7 +17,7 @@ import MartPulseLogo from '../components/MartPulseLogo';
 import AnimatedSection from '../components/AnimatedSection';
 
 export const LoginPage = () => {
-  const { login, loading, authError } = useAuth();
+  const { login, loading, authError, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -35,6 +35,12 @@ export const LoginPage = () => {
       navigate('/user/dashboard', { replace: true });
     }
   };
+
+  React.useEffect(() => {
+    if (isAuthenticated && user?.role) {
+      redirectByRole(user.role);
+    }
+  }, [isAuthenticated, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
