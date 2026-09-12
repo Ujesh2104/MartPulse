@@ -38,29 +38,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [clearAuth, token]);
 
-  // Sync token with localStorage and headers & auto-expire
-  useEffect(() => {
-    if (token && !isTokenExpired(token)) {
-      try {
-        localStorage.setItem('martpulse_token', token);
-      } catch {}
-    } else {
-      clearAuth();
-    }
-  }, [token, clearAuth]);
 
-  // Sync user with localStorage
-  useEffect(() => {
-    if (user && token && !isTokenExpired(token)) {
-      try {
-        localStorage.setItem('martpulse_user', JSON.stringify(user));
-      } catch {}
-    } else if (!user || !token || isTokenExpired(token)) {
-      try {
-        localStorage.removeItem('martpulse_user');
-      } catch {}
-    }
-  }, [user, token]);
 
   // Real-time automatic token expiration timer
   useEffect(() => {
